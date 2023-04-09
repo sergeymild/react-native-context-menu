@@ -1,4 +1,12 @@
-import { ImageRequireSource, NativeModules, Platform } from 'react-native';
+import {
+  findNodeHandle,
+  Image,
+  ImageRequireSource,
+  NativeModules,
+  Platform,
+  processColor,
+} from 'react-native';
+import type { RefObject } from 'react';
 
 const LINKING_ERROR =
   `The package 'react-native-context-menu' doesn't seem to be linked. Make sure: \n\n` +
@@ -18,11 +26,13 @@ const ContextMenu = NativeModules.ContextMenu
     );
 
 interface Params {
-  readonly viewTargetId?: number;
+  readonly viewTargetId?: RefObject<any>;
   readonly rect: { x: number; y: number; width: number; height: number };
   readonly bottomMenuItems: {
     id: string;
     title: string;
+    color?: string;
+    iconTint?: string;
     icon?: ImageRequireSource;
     font?: string;
   }[];
@@ -30,9 +40,27 @@ interface Params {
 
 export function showContextMenu(params: Params): Promise<number> {
   return new Promise<number>((resolve) => {
-    ContextMenu.showMenu(params, (info: any) => {
-      console.log('[Index.]', info);
-      resolve(2);
-    });
+    ContextMenu.showMenu(
+      {
+        ...params,
+        viewTargetId: params.viewTargetId
+          ? findNodeHandle(params.viewTargetId.current)
+          : undefined,
+        bottomMenuItems: params.bottomMenuItems.map((item) => {
+          return {
+            ...item,
+            color: item.color ? processColor(item.color) : undefined,
+            iconTint: item.iconTint ? processColor(item.iconTint) : undefined,
+            icon: item.icon
+              ? Image.resolveAssetSource(item.icon).uri
+              : undefined,
+          };
+        }),
+      },
+      (info: any) => {
+        console.log('[Index.]', info);
+        resolve(2);
+      }
+    );
   });
 }

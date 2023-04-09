@@ -5,6 +5,4 @@
 RCT_EXTERN_METHOD(showMenu:(NSDictionary *)options
                   callback:(RCTResponseSenderBlock)callback)
 
-+ (BOOL)requiresMainQueueSetu { return YES; }
-
 @end

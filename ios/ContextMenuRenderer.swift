@@ -41,8 +41,16 @@ class ContextMenuRenderer {
         get { window!.frame.height }
     }
     
+    private var screenWidth: CGFloat {
+        get { window!.frame.width }
+    }
+    
     private var maxWidth: CGFloat {
         get { window!.frame.width - MenuConstants.menuHMargin * 2 }
+    }
+    
+    private var maxBottom: CGFloat {
+        get { window!.frame.height - safeBottom }
     }
     
     private var _viewTargetedRect: CGRect {
@@ -59,7 +67,8 @@ class ContextMenuRenderer {
     
     private var targetRect: CGPoint {
         get {
-            let top = safeTop + (topMenuItems.isEmpty ? 0 : MenuConstants.topMenuHeight)
+            var top = safeTop + (topMenuItems.isEmpty ? 0 : MenuConstants.topMenuHeight)
+            if viewTargeted == nil { top -= safeTop }
             let r = _viewTargetedRect
             return .init(x: r.origin.x, y: max(top, r.origin.y))
         }
@@ -181,9 +190,17 @@ class ContextMenuRenderer {
         
         let x = max(
             MenuConstants.menuHMargin,
-            rect.x + _viewTargetedRect.width - maxWidth
+            rect.x + _viewTargetedRect.width - maxWidth - MenuConstants.menuHMargin
         )
-        let y = _viewTargetedRect.height + rect.y + MenuConstants.menuVMargin
+
+        var y = _viewTargetedRect.height + rect.y + MenuConstants.menuVMargin
+        
+        if viewTargeted == nil {
+            if y > maxBottom {
+                y = _viewTargetedRect.minY - bottomMenuHeight - MenuConstants.menuVMargin
+            }
+        }
+        
         menuView.frame = .init(
             origin: .init(x: x, y: y),
             size: .init(width: maxWidth, height: bottomMenuHeight)
@@ -201,6 +218,10 @@ class ContextMenuRenderer {
                 onMenuItemPress?(item.id)
             }
         }
+        
+        menuView.layer.shadowColor = UIColor.black.cgColor
+        menuView.layer.shadowRadius = 12
+        menuView.layer.shadowOpacity = 0
         
         customViewHeight += menuView.frame.height
         customViewHeight += MenuConstants.menuVMargin
@@ -239,7 +260,6 @@ class ContextMenuRenderer {
         let bottom = window!.safeAreaInsets.bottom
         let top = window!.safeAreaInsets.top
         let maxHeight = UIScreen.main.bounds.height - bottom - top
-        let maxBottom = UIScreen.main.bounds.height - bottom
         let menuBottom = menuView.frame.maxY
         var height = menuBottom
         if menuBottom > maxBottom {
@@ -287,7 +307,7 @@ class ContextMenuRenderer {
     
     
     func addBlurEffectView() {
-        
+        if viewTargeted == nil { return }
         window?.rootViewController?.view.insertSubview(blurEffectView, at: 0)
         
         blurEffectView.effect = MenuConstants.blurEffectDefault
@@ -340,6 +360,7 @@ class ContextMenuRenderer {
             self.blurEffectView.alpha = 1
             self.targetedImageView.layer.shadowOpacity = 0.2
             self.topMenuView?.layer.shadowOpacity = 0.2
+            self.menuView.layer.shadowOpacity = 0.2
         }
     }
     
@@ -356,12 +377,16 @@ class ContextMenuRenderer {
         )
         menuView.alpha = 0
         topMenuView?.alpha = 0
+        menuView.layer.shadowOpacity = 0
     }
     
     func removeAllViewsFromSuperView() {
         viewTargeted?.alpha = 1
+        viewTargeted = nil
+        viewTargetedRect = .zero
         targetedImageView.alpha = 0
         targetedImageView.removeFromSuperview()
+        targetedImageView.image = nil
         blurEffectView.removeFromSuperview()
         menuView.removeFromSuperview()
         menuView.subviews.forEach { $0.removeFromSuperview() }

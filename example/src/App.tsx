@@ -1,62 +1,114 @@
 import * as React from 'react';
+import { useRef } from 'react';
 import { viewHelpers } from 'react-native-jsi-view-helpers';
 
 import {
-  findNodeHandle,
+  Dimensions,
+  Image,
+  StyleProp,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
+  ViewStyle,
 } from 'react-native';
-import { useRef } from 'react';
 import { showContextMenu } from 'react-native-context-menu';
 
-export default function App() {
+const Item: React.FC<{ style: StyleProp<ViewStyle>; addPreview?: boolean }> = (
+  props
+) => {
   const ref = useRef<TouchableOpacity>(null);
+  return (
+    <TouchableOpacity
+      activeOpacity={1}
+      style={props.style}
+      ref={ref}
+      onPress={async () => {
+        console.log('[App.--]', viewHelpers.measureView(ref));
+        showContextMenu({
+          viewTargetId: props.addPreview ? ref : undefined,
+          rect: viewHelpers.measureView(ref),
+          bottomMenuItems: [
+            { id: 'copy', title: 'Copy' },
+            {
+              id: 'delete',
+              title: 'Delete',
+              color: 'red',
+              iconTint: 'yellow',
+              icon: require('./trash.png'),
+            },
+          ],
+        });
+      }}
+    >
+      <Image
+        source={require('./trash.png')}
+        style={{ width: 16, height: 16, tintColor: 'white' }}
+      />
+    </TouchableOpacity>
+  );
+};
+
+export default function App() {
   const ref2 = useRef<TouchableOpacity>(null);
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        activeOpacity={1}
-        style={styles.box}
-        ref={ref}
-        onPress={async () => {
-          console.log('[App.--]', viewHelpers.measureView(ref));
-          showContextMenu({
-            viewTargetId: findNodeHandle(ref.current)!,
-            rect: viewHelpers.measureView(ref),
-            bottomMenuItems: [
-              { id: 'copy', title: 'Copy' },
-              { id: 'delete', title: 'Delete' },
-            ],
-          });
+      <Item
+        style={{
+          position: 'absolute',
+          top: 34,
+          start: 0,
+          width: 100,
+          height: 60,
+          backgroundColor: 'red',
         }}
       />
-      <TouchableOpacity
+
+      <Item
         style={{
-          backgroundColor: 'purple',
-          height: 56,
+          position: 'absolute',
+          top: 34,
+          end: 0,
+          width: 100,
+          height: 60,
+          backgroundColor: 'red',
+        }}
+      />
+
+      <Item
+        style={{
           position: 'absolute',
           bottom: 0,
-          opacity: 1,
+          end: 0,
+          width: 100,
+          height: 60,
+          backgroundColor: 'red',
+        }}
+      />
+
+      <Item
+        addPreview
+        style={{
+          position: 'absolute',
           alignSelf: 'center',
+          top: (Dimensions.get('window').height - 100) / 2,
+          width: 100,
+          height: 100,
+          borderRadius: 8,
+          backgroundColor: 'red',
         }}
-        activeOpacity={1}
-        ref={ref2}
-        onPress={async () => {
-          showContextMenu({
-            viewTargetId: findNodeHandle(ref2.current)!,
-            rect: viewHelpers.measureView(ref2),
-            bottomMenuItems: [
-              { id: 'copy', title: 'Copy' },
-              { id: 'delete', title: 'Delete' },
-            ],
-          });
+      />
+
+      <Item
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          start: 0,
+          width: 100,
+          height: 60,
+          backgroundColor: 'red',
         }}
-      >
-        <Text style={{ backgroundColor: 'red' }}>Lorem ipsum</Text>
-      </TouchableOpacity>
+      />
     </View>
   );
 }
@@ -71,5 +123,6 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     backgroundColor: 'green',
     borderRadius: 8,
+    marginStart: 8,
   },
 });

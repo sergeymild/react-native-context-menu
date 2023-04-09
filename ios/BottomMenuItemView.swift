@@ -25,7 +25,7 @@ class BottomMenuItemView: UIView {
     func setup(index: Int, item: BottomMenuItem, menuWidth: CGFloat) {
         label.text = item.title
         label.font = item.font ?? MenuConstants.menuItemFont
-        label.textColor = .black
+        label.textColor = item.color ?? .black
         
         label.frame = .init(
             x: MenuConstants.menuItemHPadding,
@@ -36,13 +36,15 @@ class BottomMenuItemView: UIView {
         icon.isHidden = true
         if let image = item.icon {
             icon.isHidden = false
-            icon.image = image
+            icon.image = item.iconTint != nil ? image.withRenderingMode(.alwaysTemplate) : image
             icon.frame = .init(
                 x: menuWidth - MenuConstants.menuItemHPadding - MenuConstants.menuIconSize,
                 y: (MenuConstants.menuItemHeight - MenuConstants.menuIconSize) / 2,
                 width: MenuConstants.menuIconSize,
                 height: MenuConstants.menuIconSize
             )
+            
+            icon.tintColor = item.iconTint
 
             label.frame.size.width = menuWidth - MenuConstants.menuItemHPadding - MenuConstants.menuItemHPadding - MenuConstants.menuItemHPadding - MenuConstants.menuIconSize
         }

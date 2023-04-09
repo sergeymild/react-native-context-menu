@@ -2,10 +2,24 @@
 import UIKit
 import React
 
+func fetchIcon(url: String?) -> UIImage? {
+    var icon: UIImage?
+    if let i = url,
+       let url = URL(string: i),
+       let data = try? Data(contentsOf: url) {
+        icon = UIImage(data: data)
+    }
+    return icon
+}
+
 @objc(ContextMenu)
 class ContextMenu: RCTViewManager {
     override var methodQueue: DispatchQueue! {
         return .main
+    }
+    
+    override class func requiresMainQueueSetup() -> Bool {
+        return true
     }
     
     @objc
@@ -24,8 +38,10 @@ class ContextMenu: RCTViewManager {
             items.append(.init(
                 id: item["id"] as! String,
                 title: item["title"] as! String,
-                icon: RCTConvert.uiImage(item["icon"]),
-                font: RCTConvert.uiFont(item["font"])
+                icon: fetchIcon(url: item["icon"] as? String),
+                font: RCTConvert.uiFont(item["font"]),
+                color: RCTConvert.uiColor(item["color"]),
+                iconTint: RCTConvert.uiColor(item["iconTint"])
             ))
         }
         
