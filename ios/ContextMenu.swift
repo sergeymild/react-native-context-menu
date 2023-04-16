@@ -12,6 +12,14 @@ func fetchIcon(url: String?) -> UIImage? {
     return icon
 }
 
+func uiFont(_ size: Any?) -> UIFont {
+    var w: UIFont.Weight = .regular
+    return UIFont.systemFont(
+        ofSize: RCTConvert.cgFloat(size),
+        weight: w
+    )
+}
+
 @objc(ContextMenu)
 class ContextMenu: RCTViewManager {
     override var methodQueue: DispatchQueue! {
@@ -31,6 +39,12 @@ class ContextMenu: RCTViewManager {
         let targetId = RCTConvert.nsNumber(options["viewTargetId"])
         let targetView = bridge.uiManager.view(forReactTag: targetId)
         
+        MenuConstants.menuBackgroundColor = RCTConvert.uiColor(options["menuBackgroundColor"])
+        MenuConstants.menuMinWidth = RCTConvert.cgFloat(options["minWidth"])
+        MenuConstants.menuItemHeight = RCTConvert.cgFloat(options["menuItemHeight"])
+        MenuConstants.menuCornerRadius = RCTConvert.cgFloat(options["menuCornerRadius"])
+        MenuConstants.safeAreaBottom = RCTConvert.cgFloat(options["safeAreaBottom"])
+        
         var items: [BottomMenuItem] = []
         
         let bottomMenuItems = RCTConvert.nsDictionaryArray(options["bottomMenuItems"])!
@@ -39,8 +53,9 @@ class ContextMenu: RCTViewManager {
                 id: item["id"] as! String,
                 title: item["title"] as! String,
                 icon: fetchIcon(url: item["icon"] as? String),
-                font: RCTConvert.uiFont(item["font"]),
+                font: uiFont(item["titleSize"]),
                 color: RCTConvert.uiColor(item["color"]),
+                iconSize: RCTConvert.cgFloat(item["iconSize"]),
                 iconTint: RCTConvert.uiColor(item["iconTint"])
             ))
         }

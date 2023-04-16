@@ -1,9 +1,9 @@
 package com.contextmenu
 
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.bridge.Promise
+import androidx.appcompat.app.AppCompatActivity
+import com.contextmenu.contextMenuPresentationModal.FullScreenDialog
+import com.contextmenu.contextMenuPresentationModal.safeShow
+import com.facebook.react.bridge.*
 
 class ContextMenuModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
@@ -15,8 +15,14 @@ class ContextMenuModule(reactContext: ReactApplicationContext) :
   // Example method
   // See https://reactnative.dev/docs/native-modules-android
   @ReactMethod
-  fun multiply(a: Double, b: Double, promise: Promise) {
-    promise.resolve(a * b)
+  fun showMenu(params: ReadableMap, callback: Callback) {
+    var dialog: FullScreenDialog? = null
+    dialog = FullScreenDialog(false, params) {
+      println("⚽️ ContextMenuModule.onDismiss")
+      callback(it)
+    }
+    dialog.safeShow((currentActivity as AppCompatActivity).supportFragmentManager, "TopModalView")
+    dialog.isCancelable = true
   }
 
   companion object {

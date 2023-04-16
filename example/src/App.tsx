@@ -5,6 +5,7 @@ import { viewHelpers } from 'react-native-jsi-view-helpers';
 import {
   Dimensions,
   Image,
+  Platform,
   StyleProp,
   StyleSheet,
   TouchableOpacity,
@@ -13,18 +14,22 @@ import {
 } from 'react-native';
 import { showContextMenu } from 'react-native-context-menu';
 
-const Item: React.FC<{ style: StyleProp<ViewStyle>; addPreview?: boolean }> = (
-  props
-) => {
+const Item: React.FC<{
+  style: StyleProp<ViewStyle>;
+  addPreview?: boolean;
+  safeAreaBottom?: number;
+}> = (props) => {
   const ref = useRef<TouchableOpacity>(null);
   return (
     <TouchableOpacity
-      activeOpacity={1}
+      activeOpacity={Platform.OS === 'android' ? 0.4 : 1}
       style={props.style}
       ref={ref}
       onPress={async () => {
         console.log('[App.--]', viewHelpers.measureView(ref));
         showContextMenu({
+          minWidth: 200,
+          safeAreaBottom: props.safeAreaBottom,
           viewTargetId: props.addPreview ? ref : undefined,
           rect: viewHelpers.measureView(ref),
           bottomMenuItems: [
@@ -33,7 +38,7 @@ const Item: React.FC<{ style: StyleProp<ViewStyle>; addPreview?: boolean }> = (
               id: 'delete',
               title: 'Delete',
               color: 'red',
-              iconTint: 'yellow',
+              iconTint: 'red',
               icon: require('./trash.png'),
             },
           ],
@@ -78,7 +83,7 @@ export default function App() {
       <Item
         style={{
           position: 'absolute',
-          bottom: 0,
+          bottom: 50,
           end: 0,
           width: 100,
           height: 60,
@@ -100,13 +105,39 @@ export default function App() {
       />
 
       <Item
+        addPreview
         style={{
           position: 'absolute',
-          bottom: 0,
+          alignSelf: 'center',
+          top: (Dimensions.get('window').height - 100) / 2,
+          width: 50,
+          height: 50,
+          left: 300,
+          borderRadius: 8,
+          backgroundColor: 'red',
+        }}
+      />
+
+      <Item
+        safeAreaBottom={50}
+        style={{
+          position: 'absolute',
+          bottom: 50,
           start: 0,
           width: 100,
           height: 60,
           backgroundColor: 'red',
+        }}
+      />
+      <View
+        style={{
+          width: '100%',
+          height: 50,
+          backgroundColor: 'green',
+          position: 'absolute',
+          bottom: 0,
+          start: 0,
+          end: 0,
         }}
       />
     </View>

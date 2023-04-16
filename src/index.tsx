@@ -26,31 +26,59 @@ const ContextMenu = NativeModules.ContextMenu
     );
 
 interface Params {
+  readonly minWidth?: number;
+  readonly safeAreaBottom?: number;
   readonly viewTargetId?: RefObject<any>;
-  readonly rect: { x: number; y: number; width: number; height: number };
+  readonly rect?: { x: number; y: number; width: number; height: number };
+  readonly menuBackgroundColor?: string;
+  readonly menuItemHeight?: number;
+  readonly menuCornerRadius?: number;
   readonly bottomMenuItems: {
     id: string;
     title: string;
+    titleSize?: number;
+    iconSize?: number;
     color?: string;
     iconTint?: string;
     icon?: ImageRequireSource;
-    font?: string;
   }[];
 }
 
-export function showContextMenu(params: Params): Promise<number> {
-  return new Promise<number>((resolve) => {
+export function showContextMenu(params: Params): Promise<string | undefined> {
+  if (Platform.OS === 'android' && params.viewTargetId) {
+    throw new Error('viewTargetId is not supported on Android');
+  }
+  if (Platform.OS === 'android' && !params.rect) {
+    throw new Error('rect must be present');
+  }
+  if (Platform.OS === 'ios' && !params.rect && !params.viewTargetId) {
+    throw new Error('either rect or viewTargetId must be present');
+  }
+  return new Promise<string | undefined>((resolve) => {
     ContextMenu.showMenu(
       {
         ...params,
+        minWidth: params.minWidth ?? 200,
+        menuCornerRadius: params.menuCornerRadius ?? 12,
+        menuItemHeight: params.menuItemHeight ?? 36,
+        safeAreaBottom: params.safeAreaBottom ?? 0,
         viewTargetId: params.viewTargetId
           ? findNodeHandle(params.viewTargetId.current)
           : undefined,
+        menuBackgroundColor: params.menuBackgroundColor
+          ? processColor(params.menuBackgroundColor)
+          : processColor('white'),
         bottomMenuItems: params.bottomMenuItems.map((item) => {
           return {
             ...item,
-            color: item.color ? processColor(item.color) : undefined,
-            iconTint: item.iconTint ? processColor(item.iconTint) : undefined,
+            titleSize: item.titleSize ?? 14,
+            iconSize: item.iconSize ?? 16,
+            color: item.color
+              ? processColor(item.color)
+              : processColor('black'),
+            iconTint: item.iconTint
+              ? processColor(item.iconTint)
+              : processColor('black'),
             icon: item.icon
               ? Image.resolveAssetSource(item.icon).uri
               : undefined,
@@ -59,7 +87,7 @@ export function showContextMenu(params: Params): Promise<number> {
       },
       (info: any) => {
         console.log('[Index.]', info);
-        resolve(2);
+        resolve(info);
       }
     );
   });

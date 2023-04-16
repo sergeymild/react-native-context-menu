@@ -34,7 +34,11 @@ class ContextMenuRenderer {
     }
     
     private var safeBottom: CGFloat {
-        get { window!.safeAreaInsets.bottom }
+        get {
+            MenuConstants.safeAreaBottom == 0
+            ? window!.safeAreaInsets.bottom
+            : MenuConstants.safeAreaBottom
+        }
     }
     
     private var screenHeight: CGFloat {
@@ -188,16 +192,19 @@ class ContextMenuRenderer {
         maxWidth = max(MenuConstants.menuMinWidth, maxWidth)
         maxWidth = min(MenuConstants.menuMaxWidth, maxWidth)
         
-        let x = max(
+        var x = max(
             MenuConstants.menuHMargin,
-            rect.x + _viewTargetedRect.width - maxWidth - MenuConstants.menuHMargin
+            rect.x + _viewTargetedRect.width - maxWidth
         )
+        if x + maxWidth >= screenWidth {
+            x = screenWidth - maxWidth - MenuConstants.menuHMargin
+        }
 
         var y = _viewTargetedRect.height + rect.y + MenuConstants.menuVMargin
         
         if viewTargeted == nil {
             if y > maxBottom {
-                y = _viewTargetedRect.minY - bottomMenuHeight - MenuConstants.menuVMargin
+                y = maxBottom - bottomMenuHeight - MenuConstants.menuVMargin
             }
         }
         

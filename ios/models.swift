@@ -12,9 +12,10 @@ struct BottomMenuItem {
     let id: String
     let title: String
     let icon: UIImage?
-    let font: UIFont?
-    let color: UIColor?
-    let iconTint: UIColor?
+    let font: UIFont
+    let color: UIColor
+    let iconSize: CGFloat
+    let iconTint: UIColor
 }
 
 struct TopMenuItem {

@@ -1,0 +1,137 @@
+package com.contextmenu.contextMenuPresentationModal
+
+import android.content.DialogInterface
+import android.graphics.Color
+import android.graphics.PixelFormat
+import android.graphics.drawable.ColorDrawable
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import androidx.annotation.ColorInt
+import androidx.fragment.app.DialogFragment
+import com.contextmenu.R
+import com.facebook.react.bridge.ReadableMap
+
+
+data class BottomMenuItem(
+  val id: String,
+  val title: String,
+  val titleSize: Float,
+  val iconSize: Int,
+  val icon: ReadableMap?,
+  @ColorInt
+  val color: Int,
+  @ColorInt
+  val iconTint: Int,
+  val itemHeight: Int
+)
+
+internal class FullScreenDialog(
+  private val animated: Boolean,
+  private val params: ReadableMap,
+  private var onDismiss: ((String?) -> Unit)?
+) : DialogFragment() {
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setStyle(STYLE_NORMAL, R.style.Theme_FullScreenDialog)
+  }
+
+  override fun onStart() {
+    super.onStart()
+    dialog?.window?.let {
+      val width = ViewGroup.LayoutParams.MATCH_PARENT
+      val height = ViewGroup.LayoutParams.MATCH_PARENT
+      it.setLayout(width, height)
+      if (animated) {
+        it.setWindowAnimations(R.style.Theme_FullScreenDialog_Slide)
+      }
+      it.setFormat(PixelFormat.TRANSLUCENT)
+      it.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      it.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+    }
+  }
+
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
+    super.onCreateView(inflater, container, savedInstanceState)
+    val parent = inflater.inflate(R.layout.dialog, container, false)
+    return parent
+  }
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    view.findViewById<FrameLayout>(R.id.container).setOnClickListener {
+      println("⚽️ FullScreenDialog.click")
+      dismissAllowingStateLoss()
+    }
+    showMenu()
+  }
+
+  private fun showMenu() {
+    val bottomMenuItems = params.getArray("bottomMenuItems")!!
+    val size = bottomMenuItems.size()
+    val menuItemHeight = params.getDouble("menuItemHeight").dp()
+    val menuCornerRadius = params.getDouble("menuCornerRadius").dp()
+    val menuContainer = requireView().findViewById<LinearLayout>(R.id.menu_container)
+    menuContainer.setBackgroundColor(params.color(requireContext(), "menuBackgroundColor", Color.WHITE))
+    menuContainer.setCornerRadius(menuCornerRadius)
+
+    for (i in 0 until size) {
+      val item = bottomMenuItems.getMap(i)
+      menuContainer.insertMenuItem(requireContext(), BottomMenuItem(
+        id = item.getString("id")!!,
+        title = item.getString("title")!!,
+        titleSize = item.getDouble("titleSize").toFloat(),
+        iconSize = item.getDouble("iconSize").toFloat().dp(),
+        icon = item,
+        color = item.color(requireContext(), "color", Color.BLACK),
+        iconTint = item.color(requireContext(), "color", Color.BLACK),
+        itemHeight = menuItemHeight
+      )) {
+        onDismiss?.invoke(it.id)
+        onDismiss = null
+        dismissAllowingStateLoss()
+      }
+    }
+
+    menuContainer.post {
+      val menuWidth = params.width("minWidth", 0)
+      menuContainer.layoutParams = FrameLayout.LayoutParams(
+        menuWidth,
+        FrameLayout.LayoutParams.WRAP_CONTENT
+      )
+
+      val menuHeight = size * menuItemHeight
+      val screenHeight = requireView().height - params.getDouble("safeAreaBottom").dp()
+      val screenWidth = requireView().width
+      val rect = params.getMap("rect")!!
+      var right = (rect.getDouble("x")).toInt().dpf()
+      if (right == 0f) right = 8.dpf()
+
+      if (right.toInt() + menuWidth >= screenWidth) {
+        right = screenWidth - menuWidth - 8.dpf()
+      }
+
+      var top = (rect.getDouble("height") + rect.getDouble("y")).toInt().dpf() + 8.dpf()
+      if (top.toInt() + menuHeight > screenHeight) {
+        top = (screenHeight - menuHeight - 8.dp()).toFloat()
+      }
+      menuContainer.x = right
+      menuContainer.y = top
+    }
+  }
+
+  override fun onDismiss(dialog: DialogInterface) {
+    super.onDismiss(dialog)
+    println("⚽️ FullScreenDialog.onDismiss")
+    onDismiss?.invoke(null)
+  }
+}

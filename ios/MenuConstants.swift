@@ -11,6 +11,7 @@ import UIKit
 class MenuConstants {
     public static var menuHMargin: CGFloat = 16
     public static var menuVMargin: CGFloat = 8
+    public static var safeAreaBottom: CGFloat = 0
     public static var menuIconSize: CGFloat = 16
     public static var menuItemHeight: CGFloat = 36
     public static var menuItemHPadding: CGFloat = 12

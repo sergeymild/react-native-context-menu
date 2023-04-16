@@ -24,8 +24,8 @@ class BottomMenuItemView: UIView {
     
     func setup(index: Int, item: BottomMenuItem, menuWidth: CGFloat) {
         label.text = item.title
-        label.font = item.font ?? MenuConstants.menuItemFont
-        label.textColor = item.color ?? .black
+        label.font = item.font
+        label.textColor = item.color
         
         label.frame = .init(
             x: MenuConstants.menuItemHPadding,
