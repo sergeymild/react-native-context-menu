@@ -15,9 +15,10 @@ class MenuConstants {
     public static var menuIconSize: CGFloat = 16
     public static var menuItemHeight: CGFloat = 36
     public static var menuItemHPadding: CGFloat = 12
+    public static var menuItemTitleIconMargin: CGFloat = 50
     public static var menuItemFont: UIFont = .systemFont(ofSize: 14)
     public static var menuMinWidth: CGFloat = 144
-    public static var menuMaxWidth: CGFloat = 250
+    public static var menuMaxWidth: CGFloat = 300
     public static var menuBackgroundColor: UIColor = UIColor.white
     public static var menuCornerRadius: CGFloat = 12
     

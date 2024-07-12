@@ -28,7 +28,7 @@ const Item: React.FC<{
       onPress={async () => {
         console.log('[App.--]', viewHelpers.measureView(ref));
         showContextMenu({
-          minWidth: 200,
+          minWidth: 50,
           safeAreaBottom: props.safeAreaBottom,
           viewTargetId: props.addPreview ? ref : undefined,
           rect: viewHelpers.measureView(ref),
@@ -126,7 +126,7 @@ export default function App() {
           start: 0,
           width: 100,
           height: 60,
-          backgroundColor: 'red',
+          backgroundColor: 'purple',
         }}
       />
       <View

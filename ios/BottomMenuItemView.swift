@@ -46,7 +46,7 @@ class BottomMenuItemView: UIView {
             
             icon.tintColor = item.iconTint
 
-            label.frame.size.width = menuWidth - MenuConstants.menuItemHPadding - MenuConstants.menuItemHPadding - MenuConstants.menuItemHPadding - MenuConstants.menuIconSize
+            label.frame.size.width = menuWidth - MenuConstants.menuItemHPadding - MenuConstants.menuItemHPadding - MenuConstants.menuItemTitleIconMargin - MenuConstants.menuIconSize
         }
 
         isUserInteractionEnabled = true

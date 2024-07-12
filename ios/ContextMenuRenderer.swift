@@ -189,6 +189,7 @@ class ContextMenuRenderer {
             items: bottomMenuItems,
             maxWidth: maxWidth
         )
+
         maxWidth = max(MenuConstants.menuMinWidth, maxWidth)
         maxWidth = min(MenuConstants.menuMaxWidth, maxWidth)
         
@@ -196,8 +197,13 @@ class ContextMenuRenderer {
             MenuConstants.menuHMargin,
             rect.x + _viewTargetedRect.width - maxWidth
         )
+
         if x + maxWidth >= screenWidth {
             x = screenWidth - maxWidth - MenuConstants.menuHMargin
+        }
+        if x < 0 { x = MenuConstants.menuHMargin }
+        if x + maxWidth >= screenWidth {
+            maxWidth = screenWidth - MenuConstants.menuHMargin
         }
 
         var y = _viewTargetedRect.height + rect.y + MenuConstants.menuVMargin
