@@ -34,4 +34,9 @@ internal extension UIScrollView {
         let bottomOffset = CGPoint(x: 0, y: contentSize.height - bounds.size.height)
         setContentOffset(bottomOffset, animated: false)
     }
+    
+    func scrollToTop() {
+        if contentSize.height < bounds.size.height { return }
+        setContentOffset(.init(x: 0, y: 0), animated: false)
+    }
 }

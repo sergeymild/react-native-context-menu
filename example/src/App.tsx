@@ -20,6 +20,7 @@ const Item: React.FC<{
   safeAreaBottom?: number;
 }> = (props) => {
   const ref = useRef<TouchableOpacity>(null);
+  console.log('🍓[App.Item]', )
   return (
     <TouchableOpacity
       activeOpacity={Platform.OS === 'android' ? 0.4 : 1}
@@ -33,7 +34,10 @@ const Item: React.FC<{
           viewTargetId: props.addPreview ? ref : undefined,
           rect: viewHelpers.measureView(ref),
           bottomMenuItems: [
-            { id: 'copy', title: 'Copy' },
+            { id: 'copy', title: 'copy', icon: require('./trash.png') },
+            { id: 'copy', title: 'copy', icon: require('./trash.png') },
+            { id: 'copy', title: 'copy', icon: require('./trash.png') },
+            { id: 'copy', title: 'copy', icon: require('./trash.png') },
             {
               id: 'delete',
               title: 'Delete',
@@ -59,6 +63,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Item
+        addPreview
         style={{
           position: 'absolute',
           top: 34,
@@ -70,6 +75,7 @@ export default function App() {
       />
 
       <Item
+        addPreview
         style={{
           position: 'absolute',
           top: 34,
@@ -81,6 +87,7 @@ export default function App() {
       />
 
       <Item
+        addPreview
         style={{
           position: 'absolute',
           bottom: 50,
@@ -119,6 +126,7 @@ export default function App() {
       />
 
       <Item
+        addPreview
         safeAreaBottom={50}
         style={{
           position: 'absolute',
