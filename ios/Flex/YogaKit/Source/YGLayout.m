@@ -324,7 +324,7 @@ YG_PROPERTY(CGFloat, aspectRatio, AspectRatio)
 #pragma mark - Private
 
 static YGSize YGMeasureView(
-                            YGNodeRef node,
+                            YGNodeConstRef node,
                             float width,
                             YGMeasureMode widthMode,
                             float height,

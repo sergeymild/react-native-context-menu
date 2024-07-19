@@ -15,6 +15,7 @@ import androidx.annotation.ColorInt
 import androidx.fragment.app.DialogFragment
 import com.contextmenu.R
 import com.facebook.react.bridge.ReadableMap
+import kotlin.math.max
 
 
 data class BottomMenuItem(
@@ -103,7 +104,7 @@ internal class FullScreenDialog(
     }
 
     menuContainer.post {
-      val menuWidth = params.width("minWidth", 0)
+      val menuWidth = max(params.width("minWidth", 0), menuContainer.width)
       menuContainer.layoutParams = FrameLayout.LayoutParams(
         menuWidth,
         FrameLayout.LayoutParams.WRAP_CONTENT

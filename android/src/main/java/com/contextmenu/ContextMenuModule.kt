@@ -18,7 +18,6 @@ class ContextMenuModule(reactContext: ReactApplicationContext) :
   fun showMenu(params: ReadableMap, callback: Callback) {
     var dialog: FullScreenDialog? = null
     dialog = FullScreenDialog(false, params) {
-      println("⚽️ ContextMenuModule.onDismiss")
       callback(it)
     }
     dialog.safeShow((currentActivity as AppCompatActivity).supportFragmentManager, "TopModalView")

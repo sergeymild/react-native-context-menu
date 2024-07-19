@@ -26,7 +26,6 @@ const Item: React.FC<{
       style={props.style}
       ref={ref}
       onPress={async () => {
-        console.log('[App.--]', viewHelpers.measureView(ref));
         showContextMenu({
           minWidth: 50,
           safeAreaBottom: props.safeAreaBottom,

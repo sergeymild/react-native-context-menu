@@ -48,9 +48,7 @@ interface Params {
 }
 
 export function showContextMenu(params: Params): Promise<string | undefined> {
-  if (Platform.OS === 'android' && params.viewTargetId) {
-    throw new Error('viewTargetId is not supported on Android');
-  }
+  console.log('🍓[Index.showContextMenu]', params);
   if (Platform.OS === 'android' && !params.rect) {
     throw new Error('rect must be present');
   }
