@@ -20,7 +20,6 @@ const Item: React.FC<{
   safeAreaBottom?: number;
 }> = (props) => {
   const ref = useRef<TouchableOpacity>(null);
-  console.log('🍓[App.Item]', )
   return (
     <TouchableOpacity
       activeOpacity={Platform.OS === 'android' ? 0.4 : 1}
@@ -35,15 +34,26 @@ const Item: React.FC<{
           rect: viewHelpers.measureView(ref),
           bottomMenuItems: [
             { id: 'copy', title: 'copy', icon: require('./trash.png') },
-            { id: 'copy', title: 'copy', icon: require('./trash.png') },
-            { id: 'copy', title: 'copy', icon: require('./trash.png') },
-            { id: 'copy', title: 'copy', icon: require('./trash.png') },
             {
               id: 'delete',
               title: 'Delete',
               color: 'red',
               iconTint: 'red',
               icon: require('./trash.png'),
+              submenu: [
+                {
+                  id: 'delete',
+                  title: 'Delete for me',
+                  icon: require('./trash.png'),
+                },
+                {
+                  id: 'delete',
+                  title: 'Удалить сообщение для всех',
+                  icon: require('./trash.png'),
+                  color: 'red',
+                  iconTint: 'red',
+                },
+              ],
             },
           ],
         });

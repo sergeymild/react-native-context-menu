@@ -25,6 +25,17 @@ const ContextMenu = NativeModules.ContextMenu
       }
     );
 
+type ContextMenuAction = {
+  id: string;
+  title: string;
+  titleSize?: number;
+  iconSize?: number;
+  color?: string;
+  iconTint?: string;
+  icon?: ImageRequireSource;
+  submenu?: ContextMenuAction[];
+};
+
 interface Params {
   readonly minWidth?: number;
   readonly safeAreaBottom?: number;
@@ -33,15 +44,7 @@ interface Params {
   readonly menuBackgroundColor?: string;
   readonly menuItemHeight?: number;
   readonly menuCornerRadius?: number;
-  readonly bottomMenuItems: {
-    id: string;
-    title: string;
-    titleSize?: number;
-    iconSize?: number;
-    color?: string;
-    iconTint?: string;
-    icon?: ImageRequireSource;
-  }[];
+  readonly bottomMenuItems: ContextMenuAction[];
 }
 
 export function showContextMenu(params: Params): Promise<string | undefined> {
@@ -82,6 +85,16 @@ export function showContextMenu(params: Params): Promise<string | undefined> {
             icon: item.icon
               ? Image.resolveAssetSource(item.icon).uri
               : undefined,
+            submenu: item.submenu?.map((m) => ({
+              ...m,
+              titleSize: m.titleSize ?? 14,
+              iconSize: m.iconSize ?? 16,
+              color: m.color ? processColor(m.color) : processColor('black'),
+              iconTint: m.iconTint
+                ? processColor(m.iconTint)
+                : processColor('black'),
+              icon: m.icon ? Image.resolveAssetSource(m.icon).uri : undefined,
+            })),
           };
         }),
       },

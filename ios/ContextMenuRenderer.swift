@@ -21,9 +21,9 @@ class ContextMenuRenderer {
     private var menuView = UIView()
     private var topMenuView: UIView?
     private var customViewHeight: CGFloat = 0
-    private var bottomMenuItems: [BottomMenuItem] = []
+    private(set) var bottomMenuItems: [BottomMenuItem] = []
     private var topMenuItems: [TopMenuItem] = []
-    var onMenuItemPress: ((String) -> Void)? = nil
+    var onMenuItemPress: ((String, Int) -> [BottomMenuItem]?)? = nil
     
     
     private var mainViewRect : CGRect = .zero
@@ -164,9 +164,8 @@ class ContextMenuRenderer {
             v.flex.isIncludedInLayout(true)
             topMenuView?.addSubview(v)
             index += 1
-            v.onTap { [onMenuItemPress, closeAllViews] _ in
-                closeAllViews()
-                onMenuItemPress?(item.id)
+            v.onTap { [weak self] _ in
+                self?.closeAllViews()
             }
         }
         
@@ -188,7 +187,7 @@ class ContextMenuRenderer {
         customViewHeight += topMenuView!.frame.height
     }
     
-    // MARK: addMenu
+    // MARK: addBottomMenu
     func addBottomMenu() {
         let rect = targetRect
         scrollView?.addSubview(menuView)
@@ -229,16 +228,21 @@ class ContextMenuRenderer {
             size: .init(width: maxWidth, height: bottomMenuHeight)
         )
         
-        var index = 0
-        for item in bottomMenuItems {
+        
+        for (index, item) in bottomMenuItems.enumerated() {
             let v = BottomMenuItemView()
             v.setup(index: index, item: item, menuWidth: maxWidth)
             menuView.addSubview(v)
-            index += 1
             menuView.isUserInteractionEnabled = true
-            v.onTap { [onMenuItemPress, closeAllViews] _ in
+            v.onTap { [weak self] _ in
+                guard let self else { return }
+                MenuImpactGenerator.shared.impactOccurred()
+                if let subMenu = onMenuItemPress?(item.id, index) {
+                    bottomMenuItems = subMenu
+                    closeBottomMenu()
+                    return
+                }
                 closeAllViews()
-                onMenuItemPress?(item.id)
             }
         }
         
@@ -351,6 +355,27 @@ class ContextMenuRenderer {
     @objc
     func dismissViewAction(_ sender: UITapGestureRecognizer? = nil){
         closeAllViews()
+    }
+    
+    // MARK: closeBottomMenu
+    func closeBottomMenu() {
+        let prevoiusMenuFrame = menuView.frame
+        UIView.animate(withDuration: 0.2) {
+            self.menuView.alpha = 0
+        } completion: { _ in
+            self.menuView.removeFromSuperview()
+            self.menuView.subviews.forEach { $0.removeFromSuperview() }
+            self.addBottomMenu()
+            self.menuView.frame.origin = prevoiusMenuFrame.origin
+            if self.menuView.frame.maxX > self.screenWidth - MenuConstants.menuHMargin {
+                self.menuView.frame.origin.x = self.screenWidth - MenuConstants.menuHMargin - self.menuView.frame.width
+            }
+
+            self.menuView.alpha = 0
+            UIView.animate(withDuration: 0.2) {
+                self.menuView.alpha = 1
+            }
+        }
     }
     
     // MARK: closeAllViews

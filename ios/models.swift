@@ -16,6 +16,7 @@ struct BottomMenuItem {
     let color: UIColor
     let iconSize: CGFloat
     let iconTint: UIColor
+    let submenu: [BottomMenuItem]?
 }
 
 struct TopMenuItem {
