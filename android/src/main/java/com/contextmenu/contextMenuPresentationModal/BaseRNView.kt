@@ -50,14 +50,14 @@ internal class BaseRNView(context: Context?) : ReactViewGroup(context), RootView
 
   override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
     mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher)
-    mJSPointerDispatcher?.handleMotionEvent(event, eventDispatcher)
+    mJSPointerDispatcher?.handleMotionEvent(event, eventDispatcher, true)
     return super.onInterceptTouchEvent(event)
   }
 
   override fun onTouchEvent(event: MotionEvent): Boolean {
     try {
       mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher)
-      mJSPointerDispatcher?.handleMotionEvent(event, eventDispatcher)
+      mJSPointerDispatcher?.handleMotionEvent(event, eventDispatcher, true)
     } catch (e: Throwable) {
       //e
     }

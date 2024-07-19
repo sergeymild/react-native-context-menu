@@ -48,14 +48,11 @@ class ContextMenu: RCTViewManager {
         var items: [BottomMenuItem] = []
         
         let bottomMenuItems = RCTConvert.nsDictionaryArray(options["bottomMenuItems"])!
-        var icon: UIImage!
         for item in bottomMenuItems {
-            var ic = fetchIcon(url: item["icon"] as? String)
-            if ic != nil { icon = ic! }
             items.append(.init(
                 id: item["id"] as! String,
                 title: item["title"] as! String,
-                icon: ic,
+                icon: fetchIcon(url: item["icon"] as? String),
                 font: uiFont(item["titleSize"]),
                 color: RCTConvert.uiColor(item["color"]),
                 iconSize: RCTConvert.cgFloat(item["iconSize"]),
@@ -66,7 +63,7 @@ class ContextMenu: RCTViewManager {
         menuRenderer.showMenu(
             targetView: targetView,
             viewTargetedRect: RCTConvert.cgRect(options["rect"]),
-            topMenuItems: [.init(id: "w", icon: icon), .init(id: "w", icon: icon), .init(id: "w", icon: icon), .init(id: "w", icon: icon), .init(id: "w", icon: icon), .init(id: "w", icon: icon), .init(id: "w", icon: icon), .init(id: "w", icon: icon), .init(id: "w", icon: icon), .init(id: "w", icon: icon), .init(id: "w", icon: icon), .init(id: "w", icon: icon), .init(id: "w", icon: icon), .init(id: "w", icon: icon), .init(id: "w", icon: icon), .init(id: "w", icon: icon)],
+            topMenuItems: [],
             bottomMenu: items
         )
         
