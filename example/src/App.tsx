@@ -33,6 +33,7 @@ const Item: React.FC<{
           rect: viewHelpers.measureView(ref),
           bottomMenuItems: [
             { id: 'copy', title: 'copy', icon: require('./trash.png') },
+            { id: 'copy', title: 'copy', icon: require('./trash.png') },
             {
               id: 'delete',
               title: 'Delete',

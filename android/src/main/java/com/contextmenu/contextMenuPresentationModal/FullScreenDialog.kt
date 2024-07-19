@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import androidx.annotation.ColorInt
 import androidx.fragment.app.DialogFragment
 import com.contextmenu.R
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import kotlin.math.max
 
@@ -73,44 +74,17 @@ internal class FullScreenDialog(
       println("⚽️ FullScreenDialog.click")
       dismissAllowingStateLoss()
     }
-    showMenu()
+    showMenu(params.getArray("bottomMenuItems")!!)
   }
 
-  private fun showMenu() {
-    val bottomMenuItems = params.getArray("bottomMenuItems")!!
-    val size = bottomMenuItems.size()
-    val menuItemHeight = params.getDouble("menuItemHeight").dp()
-    val menuCornerRadius = params.getDouble("menuCornerRadius").dp()
-    val menuContainer = requireView().findViewById<LinearLayout>(R.id.menu_container)
-    menuContainer.setBackgroundColor(params.color(requireContext(), "menuBackgroundColor", Color.WHITE))
-    menuContainer.setCornerRadius(menuCornerRadius)
-
-    for (i in 0 until size) {
-      val item = bottomMenuItems.getMap(i)
-      menuContainer.insertMenuItem(requireContext(), BottomMenuItem(
-        id = item.getString("id")!!,
-        title = item.getString("title")!!,
-        titleSize = item.getDouble("titleSize").toFloat(),
-        iconSize = item.getDouble("iconSize").toFloat().dp(),
-        icon = item,
-        color = item.color(requireContext(), "color", Color.BLACK),
-        iconTint = item.color(requireContext(), "color", Color.BLACK),
-        itemHeight = menuItemHeight
-      )) {
-        onDismiss?.invoke(it.id)
-        onDismiss = null
-        dismissAllowingStateLoss()
-      }
-    }
-
+  private fun invalidateMenuContainer(menuContainer: LinearLayout) {
+    menuContainer.requestLayout()
+    menuContainer.invalidate()
     menuContainer.post {
       val menuWidth = max(params.width("minWidth", 0), menuContainer.width)
-      menuContainer.layoutParams = FrameLayout.LayoutParams(
-        menuWidth,
-        FrameLayout.LayoutParams.WRAP_CONTENT
-      )
 
-      val menuHeight = size * menuItemHeight
+      val menuItemHeight = params.getDouble("menuItemHeight").dp()
+      val menuHeight = menuContainer.childCount * menuItemHeight
       val screenHeight = requireView().height - params.getDouble("safeAreaBottom").dp()
       val screenWidth = requireView().width
       val rect = params.getMap("rect")!!
@@ -128,6 +102,50 @@ internal class FullScreenDialog(
       menuContainer.x = right
       menuContainer.y = top
     }
+  }
+
+  private fun showMenu(items: ReadableArray) {
+    val size = items.size()
+    val menuItemHeight = params.getDouble("menuItemHeight").dp()
+    val menuCornerRadius = params.getDouble("menuCornerRadius").dp()
+    val menuContainer = requireView().findViewById<LinearLayout>(R.id.menu_container)
+    menuContainer.setBackgroundColor(
+      params.color(
+        requireContext(),
+        "menuBackgroundColor",
+        Color.WHITE
+      )
+    )
+    menuContainer.setCornerRadius(menuCornerRadius)
+
+    for (i in 0 until size) {
+      val item = items.getMap(i)
+      menuContainer.insertMenuItem(
+        requireContext(), BottomMenuItem(
+          id = item.getString("id")!!,
+          title = item.getString("title")!!,
+          titleSize = item.getDouble("titleSize").toFloat(),
+          iconSize = item.getDouble("iconSize").toFloat().dp(),
+          icon = item,
+          color = item.color(requireContext(), "color", Color.BLACK),
+          iconTint = item.color(requireContext(), "color", Color.BLACK),
+          itemHeight = menuItemHeight
+        )
+      ) {
+        if (item.hasKey("submenu")) {
+          menuContainer.removeAllViews()
+          showMenu(item.getArray("submenu")!!)
+          invalidateMenuContainer(menuContainer)
+          return@insertMenuItem
+        }
+
+        onDismiss?.invoke(it.id)
+        onDismiss = null
+        dismissAllowingStateLoss()
+      }
+    }
+
+    invalidateMenuContainer(menuContainer)
   }
 
   override fun onDismiss(dialog: DialogInterface) {
