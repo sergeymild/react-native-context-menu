@@ -25,7 +25,7 @@ const ContextMenu = NativeModules.ContextMenu
       }
     );
 
-type ContextMenuAction = {
+export type ContextMenuAction = {
   id: string;
   title: string;
   titleSize?: number;
@@ -43,12 +43,13 @@ interface Params {
   readonly rect?: { x: number; y: number; width: number; height: number };
   readonly menuBackgroundColor?: string;
   readonly menuItemHeight?: number;
+  readonly separatorColor?: string;
+  readonly separatorHeight?: number;
   readonly menuCornerRadius?: number;
   readonly bottomMenuItems: ContextMenuAction[];
 }
 
 export function showContextMenu(params: Params): Promise<string | undefined> {
-  console.log('🍓[Index.showContextMenu]', params);
   if (Platform.OS === 'android' && !params.rect) {
     throw new Error('rect must be present');
   }
@@ -63,6 +64,10 @@ export function showContextMenu(params: Params): Promise<string | undefined> {
         menuCornerRadius: params.menuCornerRadius ?? 12,
         menuItemHeight: params.menuItemHeight ?? 36,
         safeAreaBottom: params.safeAreaBottom ?? 0,
+        separatorColor: params.separatorColor
+          ? processColor(params.separatorColor)
+          : undefined,
+        separatorHeight: params.separatorHeight,
         viewTargetId: params.viewTargetId
           ? findNodeHandle(params.viewTargetId.current)
           : undefined,

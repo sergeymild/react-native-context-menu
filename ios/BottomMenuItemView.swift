@@ -22,7 +22,7 @@ class BottomMenuItemView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setup(index: Int, item: BottomMenuItem, menuWidth: CGFloat) {
+    func setup(y: CGFloat, item: BottomMenuItem, menuWidth: CGFloat) {
         label.text = item.title
         label.font = item.font
         label.textColor = item.color
@@ -40,8 +40,8 @@ class BottomMenuItemView: UIView {
             icon.frame = .init(
                 x: menuWidth - MenuConstants.menuItemHPadding - MenuConstants.menuIconSize,
                 y: (MenuConstants.menuItemHeight - MenuConstants.menuIconSize) / 2,
-                width: MenuConstants.menuIconSize,
-                height: MenuConstants.menuIconSize
+                width: item.iconSize,
+                height: item.iconSize
             )
 
             icon.tintColor = item.iconTint
@@ -52,7 +52,7 @@ class BottomMenuItemView: UIView {
         isUserInteractionEnabled = true
         frame = .init(
             x: 0,
-            y: CGFloat(index) * MenuConstants.menuItemHeight,
+            y: y,
             width: menuWidth,
             height: MenuConstants.menuItemHeight
         )

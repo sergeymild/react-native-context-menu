@@ -36,7 +36,7 @@ private func convertMenu(items: [[AnyHashable : Any]]?) -> [BottomMenuItem] {
             icon: fetchIcon(url: item["icon"] as? String),
             font: uiFont(item["titleSize"]),
             color: uiColor(item["color"]) ?? .black,
-            iconSize: RCTConvert.cgFloat(item["iconSize"]),
+            iconSize: item["iconSize"] as? CGFloat ?? MenuConstants.menuIconSize,
             iconTint: uiColor(item["iconTint"]) ?? .black,
             submenu: convertMenu(items: RCTConvert.nsDictionaryArray(item["submenu"]))
         ))
@@ -49,39 +49,41 @@ class ContextMenu: RCTViewManager {
     override var methodQueue: DispatchQueue! {
         return .main
     }
-    
+
     override class func requiresMainQueueSetup() -> Bool {
         return true
     }
-    
+
     @objc
     func showMenu(
         _ options: NSDictionary,
         callback: @escaping RCTResponseSenderBlock
     ) {
-        
+
         let targetId = RCTConvert.nsNumber(options["viewTargetId"])
         let targetView = bridge.uiManager.view(forReactTag: targetId)
-        
+
         MenuConstants.menuBackgroundColor = RCTConvert.uiColor(options["menuBackgroundColor"])
         MenuConstants.menuMinWidth = RCTConvert.cgFloat(options["minWidth"])
         MenuConstants.menuItemHeight = RCTConvert.cgFloat(options["menuItemHeight"])
         MenuConstants.menuCornerRadius = RCTConvert.cgFloat(options["menuCornerRadius"])
         MenuConstants.safeAreaBottom = RCTConvert.cgFloat(options["safeAreaBottom"])
-        
+
         let bottomMenuItems = RCTConvert.nsDictionaryArray(options["bottomMenuItems"])!
-        
+
         menuRenderer.showMenu(
             targetView: targetView,
             viewTargetedRect: RCTConvert.cgRect(options["rect"]),
+            separatorColor: RCTConvert.uiColor(options["separatorColor"]),
+            separatorHeight: RCTConvert.cgFloat(options["separatorHeight"]),
             topMenuItems: [],
             bottomMenu: convertMenu(items: bottomMenuItems)
         )
-        
+
         menuRenderer.onMenuItemPress = { [weak self] id, index in
             guard let self else { return [] }
             let menuItem = menuRenderer.bottomMenuItems[index]
-            if let submenu = menuItem.submenu {
+            if let submenu = menuItem.submenu, !submenu.isEmpty {
                 return submenu
             }
             callback([id])

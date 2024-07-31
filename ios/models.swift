@@ -38,7 +38,7 @@ internal func longestMenuItem(items: [BottomMenuItem], maxWidth: CGFloat) -> CGF
         width += MenuConstants.menuItemHPadding * 2
         if item.icon != nil {
             width += MenuConstants.menuItemTitleIconMargin
-            width += MenuConstants.menuIconSize
+            width += item.iconSize
         }
         if width > longestWidth { longestWidth = width }
     }
