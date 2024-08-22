@@ -93,8 +93,20 @@ internal class FullScreenDialog(
       val screenHeight = requireView().height - params.getDouble("safeAreaBottom").dp()
       val screenWidth = requireView().width
       val rect = params.getMap("rect")!!
+
+      // start of parent
       var right = (rect.getDouble("x")).toInt().dpf()
-      right += (rect.getDouble("width")).toInt().dpf()
+
+      // end of parent
+      if (params.hasKey("gravity") && params.getString("gravity") == "end") {
+        right += (rect.getDouble("width")).toInt().dpf()
+      }
+
+      // center of parent
+      if (!params.hasKey("gravity")) {
+        right = (rect.getDouble("x")).toInt().dpf() + ( (rect.getDouble("width")).toInt().dpf() / 2)
+        right -= menuWidth / 2
+      }
       if (right == 0f) right = 8.dpf()
 
       if (right.toInt() + menuWidth >= screenWidth) {

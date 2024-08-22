@@ -46,6 +46,7 @@ interface Params {
   readonly separatorColor?: string;
   readonly separatorHeight?: number;
   readonly menuCornerRadius?: number;
+  readonly gravity?: 'start' | 'end'
   readonly bottomMenuItems: ContextMenuAction[];
 }
 
