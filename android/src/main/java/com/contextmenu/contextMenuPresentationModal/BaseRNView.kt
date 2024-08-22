@@ -30,16 +30,16 @@ internal class BaseRNView(context: Context?) : ReactViewGroup(context), RootView
       return reactContext.getNativeModule(UIManagerModule::class.java)!!.eventDispatcher
     }
 
-  override fun onChildStartedNativeGesture(p0: View?, p1: MotionEvent?) {
+  override fun onChildStartedNativeGesture(p0: View?, p1: MotionEvent) {
     mJSTouchDispatcher.onChildStartedNativeGesture(p1, eventDispatcher)
     mJSPointerDispatcher?.onChildStartedNativeGesture(p0, p1, eventDispatcher)
   }
 
-  override fun onChildStartedNativeGesture(p0: MotionEvent?) {
+  override fun onChildStartedNativeGesture(p0: MotionEvent) {
     this.onChildStartedNativeGesture(null, p0)
   }
 
-  override fun onChildEndedNativeGesture(p0: View?, p1: MotionEvent?) {
+  override fun onChildEndedNativeGesture(p0: View?, p1: MotionEvent) {
     mJSTouchDispatcher.onChildEndedNativeGesture(p1, eventDispatcher)
     mJSPointerDispatcher?.onChildEndedNativeGesture()
   }

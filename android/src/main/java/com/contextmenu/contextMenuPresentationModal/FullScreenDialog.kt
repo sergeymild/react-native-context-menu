@@ -82,6 +82,11 @@ internal class FullScreenDialog(
     menuContainer.invalidate()
     menuContainer.post {
       val menuWidth = max(params.width("minWidth", 0), menuContainer.width)
+      if (menuContainer.width < menuWidth) {
+        menuContainer.layoutParams.width = menuWidth
+        menuContainer.requestLayout()
+        menuContainer.invalidate()
+      }
 
       val menuItemHeight = params.getDouble("menuItemHeight").dp()
       val menuHeight = menuContainer.childCount * menuItemHeight
@@ -89,6 +94,7 @@ internal class FullScreenDialog(
       val screenWidth = requireView().width
       val rect = params.getMap("rect")!!
       var right = (rect.getDouble("x")).toInt().dpf()
+      right += (rect.getDouble("width")).toInt().dpf()
       if (right == 0f) right = 8.dpf()
 
       if (right.toInt() + menuWidth >= screenWidth) {
