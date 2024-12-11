@@ -38,15 +38,15 @@ class BottomMenuItemView: UIView {
             icon.isHidden = false
             icon.image = item.iconTint != nil ? image.withRenderingMode(.alwaysTemplate) : image
             icon.frame = .init(
-                x: menuWidth - MenuConstants.menuItemHPadding - MenuConstants.menuIconSize,
-                y: (MenuConstants.menuItemHeight - MenuConstants.menuIconSize) / 2,
+                x: menuWidth - MenuConstants.menuItemHPadding - item.iconSize,
+                y: (MenuConstants.menuItemHeight - item.iconSize) / 2,
                 width: item.iconSize,
                 height: item.iconSize
             )
 
             icon.tintColor = item.iconTint
 
-            label.frame.size.width = menuWidth - MenuConstants.menuItemHPadding - MenuConstants.menuItemHPadding - MenuConstants.menuItemTitleIconMargin - MenuConstants.menuIconSize
+            label.frame.size.width = menuWidth - MenuConstants.menuItemHPadding - MenuConstants.menuItemHPadding - MenuConstants.menuItemTitleIconMargin - item.iconSize
         }
 
         isUserInteractionEnabled = true
