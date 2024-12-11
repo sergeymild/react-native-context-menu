@@ -5,7 +5,7 @@ This library allows to create simple context menu
 ## Installation
 
 ```sh
-"react-native-context-menu": "sergeymild/react-native-context-menu#0.1.0"
+"react-native-context-menu": "sergeymild/react-native-context-menu#0.3.5"
 ```
 
 ## Usage
