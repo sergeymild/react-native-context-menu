@@ -24,6 +24,7 @@ class MenuConstants {
 
     public static var topMenuHeight: CGFloat = 56
     public static var topMenuItemSize: CGFloat = 36
+    public static var leadingIcons = false
 
     public static var blurEffectEnabled: Bool = true
     public static var blurEffectDefault: UIBlurEffect = UIBlurEffect(style: .light)

@@ -68,6 +68,8 @@ class ContextMenu: RCTViewManager {
         MenuConstants.menuItemHeight = RCTConvert.cgFloat(options["menuItemHeight"])
         MenuConstants.menuCornerRadius = RCTConvert.cgFloat(options["menuCornerRadius"])
         MenuConstants.safeAreaBottom = RCTConvert.cgFloat(options["safeAreaBottom"])
+        MenuConstants.leadingIcons = RCTConvert.bool(options["leadingIcons"])
+        MenuConstants.blurEffectEnabled = RCTConvert.bool(options["disableBlur"]) != false
 
         let bottomMenuItems = RCTConvert.nsDictionaryArray(options["bottomMenuItems"])!
 
@@ -76,7 +78,6 @@ class ContextMenu: RCTViewManager {
             viewTargetedRect: RCTConvert.cgRect(options["rect"]),
             separatorColor: RCTConvert.uiColor(options["separatorColor"]),
             separatorHeight: RCTConvert.cgFloat(options["separatorHeight"]),
-            disableBlur: RCTConvert.bool(options["disableBlur"]),
             topMenuItems: [],
             bottomMenu: convertMenu(items: bottomMenuItems)
         )

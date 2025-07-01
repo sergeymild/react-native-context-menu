@@ -120,7 +120,6 @@ class ContextMenuRenderer {
         viewTargetedRect: CGRect? = nil,
         separatorColor: UIColor? = nil,
         separatorHeight: CGFloat? = nil,
-        disableBlur: Bool = false,
         animated: Bool = true,
         topMenuItems: [TopMenuItem] = [],
         bottomMenu: [BottomMenuItem]
@@ -140,7 +139,7 @@ class ContextMenuRenderer {
             self.mainViewRect = self.window!.frame
             self.separatorColor = separatorColor
             self.separatorHeight = separatorHeight
-            if !disableBlur { self.addBlurEffectView() }
+            if !MenuConstants.blurEffectEnabled { self.addBlurEffectView() }
 
             self.addTopMenu()
             self.addTargetedImageView()

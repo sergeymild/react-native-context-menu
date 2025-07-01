@@ -49,6 +49,7 @@ interface Params {
   readonly gravity?: 'start' | 'end'
   readonly bottomMenuItems: ContextMenuAction[];
   disableBlur?: boolean
+  leadingIcons?: boolean
 }
 
 export function showContextMenu(params: Params): Promise<string | undefined> {
@@ -64,6 +65,7 @@ export function showContextMenu(params: Params): Promise<string | undefined> {
         ...params,
         minWidth: params.minWidth ?? 200,
         disableBlur: params.disableBlur ?? false,
+        leadingIcons: params.leadingIcons ?? false,
         menuCornerRadius: params.menuCornerRadius ?? 12,
         menuItemHeight: params.menuItemHeight ?? 36,
         safeAreaBottom: params.safeAreaBottom ?? 0,
