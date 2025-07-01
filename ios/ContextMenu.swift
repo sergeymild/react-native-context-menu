@@ -76,12 +76,12 @@ class ContextMenu: RCTViewManager {
             viewTargetedRect: RCTConvert.cgRect(options["rect"]),
             separatorColor: RCTConvert.uiColor(options["separatorColor"]),
             separatorHeight: RCTConvert.cgFloat(options["separatorHeight"]),
+            disableBlur: RCTConvert.bool(options["disableBlur"]),
             topMenuItems: [],
             bottomMenu: convertMenu(items: bottomMenuItems)
         )
 
-        menuRenderer.onMenuItemPress = { [weak self] id, index in
-            guard let self else { return [] }
+        menuRenderer.onMenuItemPress = { id, index in
             let menuItem = menuRenderer.bottomMenuItems[index]
             if let submenu = menuItem.submenu, !submenu.isEmpty {
                 return submenu
