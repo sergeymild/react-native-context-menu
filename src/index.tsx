@@ -63,7 +63,7 @@ export function showContextMenu(params: Params): Promise<string | undefined> {
     ContextMenu.showMenu(
       {
         ...params,
-        minWidth: params.minWidth ?? 200,
+        minWidth: params.minWidth ?? 100,
         disableBlur: params.disableBlur ?? false,
         leadingIcons: params.leadingIcons ?? false,
         menuCornerRadius: params.menuCornerRadius ?? 12,

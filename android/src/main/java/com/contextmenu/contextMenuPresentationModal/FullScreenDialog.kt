@@ -126,6 +126,7 @@ internal class FullScreenDialog(
     val size = items.size()
     val menuItemHeight = params.getDouble("menuItemHeight").dp()
     val menuCornerRadius = params.getDouble("menuCornerRadius").dp()
+    val leadingIcons = params.getBoolean("leadingIcons")
     val menuContainer = requireView().findViewById<LinearLayout>(R.id.menu_container)
     menuContainer.setBackgroundColor(
       params.color(
@@ -139,7 +140,9 @@ internal class FullScreenDialog(
     for (i in 0 until size) {
       val item = items.getMap(i)
       menuContainer.insertMenuItem(
-        requireContext(), BottomMenuItem(
+        requireContext(),
+        leadingIcons = leadingIcons,
+        data = BottomMenuItem(
           id = item.getString("id")!!,
           title = item.getString("title")!!,
           titleSize = item.getDouble("titleSize").toFloat(),
