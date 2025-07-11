@@ -117,7 +117,7 @@ internal class FullScreenDialog(
       if (top.toInt() + menuHeight > screenHeight) {
         top = (screenHeight - menuHeight - 8.dp()).toFloat()
       }
-      menuContainer.x = right
+      menuContainer.x = max(16.dp().toFloat(), right)
       menuContainer.y = top
     }
   }
