@@ -79,7 +79,8 @@ class ContextMenu: RCTViewManager {
             separatorColor: RCTConvert.uiColor(options["separatorColor"]),
             separatorHeight: RCTConvert.cgFloat(options["separatorHeight"]),
             topMenuItems: [],
-            bottomMenu: convertMenu(items: bottomMenuItems)
+            bottomMenu: convertMenu(items: bottomMenuItems),
+            gravity: RCTConvert.nsString(options["gravity"])
         )
 
         menuRenderer.onMenuItemPress = { id, index in

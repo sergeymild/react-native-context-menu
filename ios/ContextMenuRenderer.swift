@@ -26,7 +26,7 @@ class ContextMenuRenderer {
     private var separatorColor: UIColor? = nil
     private var separatorHeight: CGFloat? = nil
     var onMenuItemPress: ((String, Int) -> [BottomMenuItem]?)? = nil
-
+    private var gravity: String? = nil
 
     private var mainViewRect : CGRect = .zero
     private var window: UIWindow?
@@ -122,10 +122,12 @@ class ContextMenuRenderer {
         separatorHeight: CGFloat? = nil,
         animated: Bool = true,
         topMenuItems: [TopMenuItem] = [],
-        bottomMenu: [BottomMenuItem]
+        bottomMenu: [BottomMenuItem],
+        gravity: String? = nil
     ) {
 
         self.viewTargeted = targetView
+        self.gravity = gravity
         self.viewTargetedRect = viewTargetedRect
         self.bottomMenuItems = bottomMenu
         self.topMenuItems = topMenuItems
@@ -234,6 +236,10 @@ class ContextMenuRenderer {
                 y = maxBottom - bottomMenuHeight - MenuConstants.menuVMargin
             }
         }
+
+      if gravity == "start" {
+        x = MenuConstants.menuHMargin
+      }
 
         menuView.frame = .init(
             origin: .init(x: x, y: y),
@@ -356,7 +362,7 @@ class ContextMenuRenderer {
         scrollView?.onTap { [closeAllViews] _ in closeAllViews() }
 
         DispatchQueue.main.async {
-            if self.allContentHeight >= self.maxHeight {
+          if self.allContentHeight >= self.maxHeight && !self.topMenuItems.isEmpty {
                 self.scrollView?.scrollToTop()
             } else {
                 self.scrollView?.scrollToBottom()
