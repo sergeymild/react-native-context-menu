@@ -32,7 +32,7 @@ internal func longestMenuItem(items: [BottomMenuItem], maxWidth: CGFloat) -> CGF
         if !item.title.isEmpty {
             width = item.title.height(
                 constraintedWidth: maxWidth,
-                font: item.font ?? MenuConstants.menuItemFont
+                font: item.font
             ).width
         }
         width += MenuConstants.menuItemHPadding * 2

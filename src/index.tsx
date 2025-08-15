@@ -17,18 +17,19 @@ const LINKING_ERROR =
 const ContextMenu = NativeModules.ContextMenu
   ? NativeModules.ContextMenu
   : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      }
-    );
+    {},
+    {
+      get() {
+        throw new Error(LINKING_ERROR);
+      },
+    }
+  );
 
 export type ContextMenuAction = {
   id: string;
   title: string;
   titleSize?: number;
+  fontFamily?: string;
   iconSize?: number;
   color?: string;
   iconTint?: string;

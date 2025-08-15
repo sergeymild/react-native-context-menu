@@ -2,7 +2,7 @@
 import UIKit
 import React
 
-func fetchIcon(url: String?) -> UIImage? {
+private func fetchIcon(url: String?) -> UIImage? {
     var icon: UIImage?
     if let i = url,
        let url = URL(string: i),
@@ -12,15 +12,17 @@ func fetchIcon(url: String?) -> UIImage? {
     return icon
 }
 
-func uiFont(_ size: Any?) -> UIFont {
-    var w: UIFont.Weight = .regular
-    return UIFont.systemFont(
-        ofSize: RCTConvert.cgFloat(size),
-        weight: w
-    )
+private func uiFont(_ size: Any?, _ fontFamily: String?) -> UIFont {
+  if let fontFamily, let font = UIFont(name: fontFamily, size: RCTConvert.cgFloat(size)) {
+    return font
+  }
+  return UIFont.systemFont(
+      ofSize: RCTConvert.cgFloat(size),
+      weight: .regular
+  )
 }
 
-func uiColor(_ value: Any?) -> UIColor? {
+private func uiColor(_ value: Any?) -> UIColor? {
     guard let value else { return nil }
     return RCTConvert.uiColor(value)
 }
@@ -30,11 +32,11 @@ private func convertMenu(items: [[AnyHashable : Any]]?) -> [BottomMenuItem] {
     var menuItems: [BottomMenuItem] = []
 
     for item in items {
-        menuItems.append(.init(
+        menuItems.append(BottomMenuItem(
             id: item["id"] as! String,
             title: item["title"] as! String,
             icon: fetchIcon(url: item["icon"] as? String),
-            font: uiFont(item["titleSize"]),
+            font: uiFont(item["titleSize"], item["fontFamily"] as? String),
             color: uiColor(item["color"]) ?? .black,
             iconSize: item["iconSize"] as? CGFloat ?? MenuConstants.menuIconSize,
             iconTint: uiColor(item["iconTint"]) ?? .black,
