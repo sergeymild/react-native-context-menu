@@ -138,7 +138,7 @@ internal class FullScreenDialog(
     menuContainer.setCornerRadius(menuCornerRadius)
 
     for (i in 0 until size) {
-      val item = items.getMap(i)
+      val item = items.getMap(i) ?: continue
       menuContainer.insertMenuItem(
         requireContext(),
         leadingIcons = leadingIcons,
