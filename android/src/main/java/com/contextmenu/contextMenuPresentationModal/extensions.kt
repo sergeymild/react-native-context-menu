@@ -39,7 +39,7 @@ fun Float.dpf(): Float {
 
 fun ReadableMap.color(context: Context, key: String, default: Int): Int {
   if (!hasKey(key)) return default
-  return ColorPropConverter.getColor(getDouble(key), context)
+  return ColorPropConverter.getColor(getDouble(key), context)!!
 }
 
 fun ReadableMap.width(key: String, default: Int): Int {

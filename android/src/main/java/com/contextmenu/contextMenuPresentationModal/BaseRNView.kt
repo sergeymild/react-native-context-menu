@@ -39,12 +39,12 @@ internal class BaseRNView(context: Context?) : ReactViewGroup(context), RootView
     this.onChildStartedNativeGesture(null, p0)
   }
 
-  override fun onChildEndedNativeGesture(p0: View?, p1: MotionEvent) {
+  override fun onChildEndedNativeGesture(p0: View, p1: MotionEvent) {
     mJSTouchDispatcher.onChildEndedNativeGesture(p1, eventDispatcher)
     mJSPointerDispatcher?.onChildEndedNativeGesture()
   }
 
-  override fun handleException(t: Throwable?) {
+  override fun handleException(t: Throwable) {
     reactContext.handleException(RuntimeException(t))
   }
 
