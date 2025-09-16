@@ -8,34 +8,54 @@
 
 import UIKit
 
-class TopMenuItemView: UIView {
-    let icon = UIImageView()
-    
-    init() {
-        super.init(frame: .zero)
-        addSubview(icon)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func setup(index: Int, item: TopMenuItem) {
-        icon.image = item.icon
-        icon.contentMode = .scaleAspectFit
-        icon.frame = .init(
-            x: 0,
-            y: 0,
-            width: MenuConstants.topMenuItemSize,
-            height: MenuConstants.topMenuItemSize
-        )
+struct TopMenuItem {
+    let id: String
+    var icon: UIImage? = nil
+    var iconTint: UIColor? = nil
+    var emoji: String? = nil
+}
 
-        isUserInteractionEnabled = true
-        frame = .init(
-            x: index == 0 ? MenuConstants.menuItemHPadding : (CGFloat(index) * MenuConstants.topMenuItemSize) + MenuConstants.menuItemHPadding,
-            y: (MenuConstants.topMenuHeight - MenuConstants.topMenuItemSize) / 2,
-            width: MenuConstants.topMenuItemSize,
-            height: MenuConstants.topMenuItemSize
-        )
+class TopMenuItemView: UIView {
+  let icon = UIImageView()
+  let emoji = UILabel()
+  
+  init() {
+    super.init(frame: .zero)
+    addSubview(icon)
+    addSubview(emoji)
+    backgroundColor = .green
+  }
+  
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+  
+  func setup(index: Int, item: TopMenuItem) {
+    if let i = item.icon {
+      icon.image = i
+      icon.tintColor = item.iconTint
+      icon.contentMode = .scaleAspectFit
+      icon.frame = .init(
+        x: 0,
+        y: 0,
+        width: MenuConstants.topMenuItemSize,
+        height: MenuConstants.topMenuItemSize
+      )
+      frame = .init(
+        x: 0,
+        y: 0,
+        width: MenuConstants.topMenuItemSize,
+        height: MenuConstants.topMenuItemSize
+      )
     }
+    if let i = item.emoji {
+      emoji.text = i
+      emoji.font = .systemFont(ofSize: MenuConstants.topMenuItemSize)
+      emoji.sizeToFit()
+      frame.size = emoji.frame.size
+    }
+    
+    isUserInteractionEnabled = true
+    
+  }
 }

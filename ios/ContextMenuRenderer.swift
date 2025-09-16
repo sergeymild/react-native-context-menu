@@ -26,6 +26,7 @@ class ContextMenuRenderer {
     private var separatorColor: UIColor? = nil
     private var separatorHeight: CGFloat? = nil
     var onMenuItemPress: ((String, Int) -> [BottomMenuItem]?)? = nil
+    var onTopMenuItemPress: ((String) -> Void)? = nil
     private var gravity: String? = nil
 
     private var mainViewRect : CGRect = .zero
@@ -158,17 +159,18 @@ class ContextMenuRenderer {
         topMenuView = UIView()
         self.scrollView?.addSubview(topMenuView!)
 
-        topMenuView?.flex.maxWidth(MenuConstants.menuMaxWidth)
+        topMenuView?.flex.maxWidth(UIScreen.main.bounds.width - 32)
         topMenuView?.flex.direction(.row)
         topMenuView?.flex.wrap(.wrap)
+        topMenuView?.flex.gap(12)
         topMenuView?.flex.justifyContent(.center)
         topMenuView?.flex.alignItems(.center)
-        topMenuView?.flex.paddingVertical(8)
+        topMenuView?.flex.padding(8)
 
         topMenuView!.backgroundColor = MenuConstants.menuBackgroundColor
         topMenuView!.layer.cornerRadius = MenuConstants.menuCornerRadius
         topMenuView!.layer.shadowColor = UIColor.black.cgColor
-        topMenuView!.layer.shadowRadius = 16
+        topMenuView!.layer.shadowRadius = MenuConstants.topMenuItemSize / 2
         topMenuView!.layer.shadowOpacity = 0
 
         var index = 0
@@ -179,7 +181,10 @@ class ContextMenuRenderer {
             topMenuView?.addSubview(v)
             index += 1
             v.onTap { [weak self] _ in
-                self?.closeAllViews()
+                guard let self else { return }
+              MenuImpactGenerator.shared.impactOccurred()
+              onTopMenuItemPress?(item.id)
+              closeAllViews()
             }
         }
 

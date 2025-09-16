@@ -22,7 +22,6 @@ class MenuConstants {
     public static var menuBackgroundColor: UIColor = UIColor.white
     public static var menuCornerRadius: CGFloat = 12
 
-    public static var topMenuHeight: CGFloat = 56
     public static var topMenuItemSize: CGFloat = 36
     public static var leadingIcons = false
 

@@ -18,8 +18,8 @@ class ContextMenuModule(reactContext: ReactApplicationContext) :
   fun showMenu(params: ReadableMap, callback: Callback) {
     currentActivity?.runOnUiThread {
       var dialog: FullScreenDialog? = null
-      dialog = FullScreenDialog(false, params) {
-        callback(it)
+      dialog = FullScreenDialog(params) { id, type ->
+        callback(id, type)
       }
       dialog.safeShow((currentActivity as AppCompatActivity).supportFragmentManager, "TopModalView")
       dialog.isCancelable = true

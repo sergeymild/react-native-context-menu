@@ -6,9 +6,4 @@
     <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
     <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
   </style>
-
-  <style name="Theme.FullScreenDialog.Slide">
-    <item name="android:windowEnterAnimation">@anim/slide_up</item>
-    <item name="android:windowExitAnimation">@anim/slide_down</item>
-  </style>
 </resources>
