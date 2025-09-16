@@ -17,13 +17,13 @@ const LINKING_ERROR =
 const ContextMenu = NativeModules.ContextMenu
   ? NativeModules.ContextMenu
   : new Proxy(
-    {},
-    {
-      get() {
-        throw new Error(LINKING_ERROR);
-      },
-    }
-  );
+      {},
+      {
+        get() {
+          throw new Error(LINKING_ERROR);
+        },
+      }
+    );
 
 export type ContextMenuAction = {
   id: string;
@@ -37,30 +37,41 @@ export type ContextMenuAction = {
   submenu?: ContextMenuAction[];
 };
 
+export type TopMenuItem = {
+  id: string;
+  icon?: ImageRequireSource;
+  iconTint?: string;
+  emoji?: string;
+};
+
 interface Params {
-  readonly minWidth?: number;
-  readonly safeAreaBottom?: number;
-  readonly viewTargetId?: RefObject<any>;
-  readonly rect?: { x: number; y: number; width: number; height: number };
-  readonly menuBackgroundColor?: string;
-  readonly menuItemHeight?: number;
-  readonly separatorColor?: string;
-  readonly separatorHeight?: number;
-  readonly menuCornerRadius?: number;
-  readonly gravity?: 'start' | 'end'
-  readonly bottomMenuItems: ContextMenuAction[];
-  disableBlur?: boolean
-  leadingIcons?: boolean
+  minWidth?: number;
+  safeAreaBottom?: number;
+  viewTargetId?: RefObject<any>;
+  rect?: { x: number; y: number; width: number; height: number };
+  menuBackgroundColor?: string;
+  menuItemHeight?: number;
+  topMenuItemSize?: number;
+  separatorColor?: string;
+  separatorHeight?: number;
+  menuCornerRadius?: number;
+  gravity?: 'start' | 'end';
+  bottomMenuItems: ContextMenuAction[];
+  topMenuItems: TopMenuItem[];
+  disableBlur?: boolean;
+  leadingIcons?: boolean;
 }
 
-export function showContextMenu(params: Params): Promise<string | undefined> {
+type ItemPressed = { id: string; type: 'top' | 'bottom' };
+
+export function showContextMenu(params: Params) {
   if (Platform.OS === 'android' && !params.rect) {
     throw new Error('rect must be present');
   }
   if (Platform.OS === 'ios' && !params.rect && !params.viewTargetId) {
     throw new Error('either rect or viewTargetId must be present');
   }
-  return new Promise<string | undefined>((resolve) => {
+  return new Promise<ItemPressed | undefined>((resolve) => {
     ContextMenu.showMenu(
       {
         ...params,
@@ -69,6 +80,7 @@ export function showContextMenu(params: Params): Promise<string | undefined> {
         leadingIcons: params.leadingIcons ?? false,
         menuCornerRadius: params.menuCornerRadius ?? 12,
         menuItemHeight: params.menuItemHeight ?? 36,
+        topMenuItemSize: params.topMenuItemSize ?? 36,
         safeAreaBottom: params.safeAreaBottom ?? 0,
         separatorColor: params.separatorColor
           ? processColor(params.separatorColor)
@@ -106,10 +118,20 @@ export function showContextMenu(params: Params): Promise<string | undefined> {
             })),
           };
         }),
+        topMenuItems: params.topMenuItems?.map((item) => {
+          return {
+            ...item,
+            iconTint: item.iconTint
+              ? processColor(item.iconTint)
+              : processColor('black'),
+            icon: item.icon
+              ? Image.resolveAssetSource(item.icon).uri
+              : undefined,
+          };
+        }),
       },
-      (info: any) => {
-        console.log('[Index.]', info);
-        resolve(info);
+      (id: string, type: 'top' | 'bottom') => {
+        resolve({ id, type } as ItemPressed);
       }
     );
   });

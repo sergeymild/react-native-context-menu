@@ -19,10 +19,6 @@ struct BottomMenuItem {
     let submenu: [BottomMenuItem]?
 }
 
-struct TopMenuItem {
-    let id: String
-    let icon: UIImage
-}
 
 
 internal func longestMenuItem(items: [BottomMenuItem], maxWidth: CGFloat) -> CGFloat {

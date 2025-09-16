@@ -14,6 +14,27 @@ import {
 } from 'react-native';
 import { showContextMenu } from 'react-native-context-menu';
 
+const emojisList = [
+  '👍',
+  '👎',
+  '❤️',
+  '🔥',
+  '🥰',
+  '👏',
+  '😄',
+  '🤔',
+  '🤯',
+  '😱',
+  '🤬',
+  '😢',
+  '🎉',
+  '🤩',
+  '🤮',
+  '💩',
+  '🙏',
+  '👌',
+];
+
 const Item: React.FC<{
   style: StyleProp<ViewStyle>;
   addPreview?: boolean;
@@ -26,11 +47,13 @@ const Item: React.FC<{
       style={props.style}
       ref={ref}
       onPress={async () => {
-        showContextMenu({
+        const f = await showContextMenu({
           minWidth: 50,
           safeAreaBottom: props.safeAreaBottom,
           viewTargetId: props.addPreview ? ref : undefined,
           rect: viewHelpers.measureView(ref),
+          topMenuItemSize: 30,
+          topMenuItems: emojisList.map((s) => ({ id: s, emoji: s })),
           bottomMenuItems: [
             { id: 'copy', title: 'copy', icon: require('./trash.png') },
             { id: 'copy', title: 'copy', icon: require('./trash.png') },
@@ -57,6 +80,7 @@ const Item: React.FC<{
             },
           ],
         });
+        console.log('[App.]', f);
       }}
     >
       <Image

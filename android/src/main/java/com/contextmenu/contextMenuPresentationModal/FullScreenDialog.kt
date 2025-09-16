@@ -33,9 +33,8 @@ data class BottomMenuItem(
 )
 
 internal class FullScreenDialog(
-  private val animated: Boolean,
   private val params: ReadableMap,
-  private var onDismiss: ((String?) -> Unit)?
+  private var onDismiss: ((String?, String) -> Unit)?
 ) : DialogFragment() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,9 +48,6 @@ internal class FullScreenDialog(
       val width = ViewGroup.LayoutParams.MATCH_PARENT
       val height = ViewGroup.LayoutParams.MATCH_PARENT
       it.setLayout(width, height)
-      if (animated) {
-        it.setWindowAnimations(R.style.Theme_FullScreenDialog_Slide)
-      }
       it.setFormat(PixelFormat.TRANSLUCENT)
       it.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
       it.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
@@ -160,7 +156,7 @@ internal class FullScreenDialog(
           return@insertMenuItem
         }
 
-        onDismiss?.invoke(it.id)
+        onDismiss?.invoke(it.id, "bottom")
         onDismiss = null
         dismissAllowingStateLoss()
       }
@@ -172,6 +168,6 @@ internal class FullScreenDialog(
   override fun onDismiss(dialog: DialogInterface) {
     super.onDismiss(dialog)
     println("⚽️ FullScreenDialog.onDismiss")
-    onDismiss?.invoke(null)
+    onDismiss?.invoke(null, "")
   }
 }

@@ -251,6 +251,10 @@ YG_EDGE_PROPERTY(borderStartWidth, BorderStartWidth, Border, YGEdgeStart)
 YG_EDGE_PROPERTY(borderEndWidth, BorderEndWidth, Border, YGEdgeEnd)
 YG_EDGE_PROPERTY(borderWidth, BorderWidth, Border, YGEdgeAll)
 
+YG_EDGE_PROPERTY_SETTER(columnGap, ColumnGap, Gap, YGGutterColumn)
+YG_EDGE_PROPERTY_SETTER(rowGap, RowGap, Gap, YGGutterRow)
+YG_EDGE_PROPERTY_SETTER(gap, Gap, Gap, YGGutterAll)
+
 YG_AUTO_VALUE_PROPERTY(width, Width)
 YG_AUTO_VALUE_PROPERTY(height, Height)
 YG_VALUE_PROPERTY(minWidth, MinWidth)
