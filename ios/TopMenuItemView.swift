@@ -23,7 +23,6 @@ class TopMenuItemView: UIView {
     super.init(frame: .zero)
     addSubview(icon)
     addSubview(emoji)
-    backgroundColor = .green
   }
   
   required init?(coder: NSCoder) {

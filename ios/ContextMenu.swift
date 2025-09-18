@@ -55,7 +55,7 @@ private func convertTopMenu(items: [[AnyHashable : Any]]?) -> [TopMenuItem] {
       id: item["id"] as! String,
       icon: fetchIcon(url: item["icon"] as? String),
       iconTint: uiColor(item["iconTint"]),
-      emoji: item["emoji"] as? String,
+      emoji: item["emoji"] as? String
     ))
   }
   return menuItems
