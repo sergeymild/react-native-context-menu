@@ -53,6 +53,7 @@ const Item: React.FC<{
           viewTargetId: props.addPreview ? ref : undefined,
           rect: viewHelpers.measureView(ref),
           topMenuItemSize: 30,
+          gravity: 'start',
           topMenuItems: emojisList.map((s) => ({ id: s, emoji: s })),
           bottomMenuItems: [
             { id: 'copy', title: 'copy', icon: require('./trash.png') },
@@ -138,22 +139,8 @@ export default function App() {
           position: 'absolute',
           alignSelf: 'center',
           top: (Dimensions.get('window').height - 100) / 2,
-          width: 100,
+          width: 200,
           height: 100,
-          borderRadius: 8,
-          backgroundColor: 'red',
-        }}
-      />
-
-      <Item
-        addPreview
-        style={{
-          position: 'absolute',
-          alignSelf: 'center',
-          top: (Dimensions.get('window').height - 100) / 2,
-          width: 50,
-          height: 50,
-          left: 300,
           borderRadius: 8,
           backgroundColor: 'red',
         }}
