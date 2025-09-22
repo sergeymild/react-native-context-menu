@@ -1,22 +1,27 @@
 package com.contextmenu.contextMenuPresentationModal
 
 import android.content.DialogInterface
+import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.fragment.app.DialogFragment
 import com.contextmenu.R
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import kotlin.math.max
+import kotlin.math.min
 
 
 data class BottomMenuItem(
@@ -70,56 +75,103 @@ internal class FullScreenDialog(
       println("⚽️ FullScreenDialog.click")
       dismissAllowingStateLoss()
     }
+    showTopMenu(params.getArray("topMenuItems")!!)
     showMenu(params.getArray("bottomMenuItems")!!)
   }
 
-  private fun invalidateMenuContainer(menuContainer: LinearLayout) {
+  private fun invalidateMenuContainer(menuContainer: LinearLayout, topMenu: LinearLayout) {
     menuContainer.requestLayout()
     menuContainer.invalidate()
     menuContainer.post {
-      val menuWidth = max(params.width("minWidth", 0), menuContainer.width)
-      if (menuContainer.width < menuWidth) {
-        menuContainer.layoutParams.width = menuWidth
-        menuContainer.requestLayout()
-        menuContainer.invalidate()
+      topMenu.post {
+
+        val menuWidth = max(params.width("minWidth", 0), menuContainer.width)
+        if (menuContainer.width < menuWidth) {
+          menuContainer.layoutParams.width = menuWidth
+          menuContainer.requestLayout()
+          menuContainer.invalidate()
+        }
+
+        val menuItemHeight = params.getDouble("menuItemHeight").dp()
+        val menuEdgesMargin = params.getDouble("menuEdgesMargin").dp().toFloat()
+        val menuHeight = menuContainer.childCount * menuItemHeight
+        val screenHeight = requireView().height - params.getDouble("safeAreaBottom").dp()
+        val screenWidth = requireView().width
+        val rect = params.getMap("rect")!!
+
+        // start of parent
+        var right = (rect.getDouble("x")).toInt().dpf()
+
+        // end of parent
+        if (params.hasKey("gravity") && params.getString("gravity") == "end") {
+          right += (rect.getDouble("width")).toInt().dpf()
+        }
+
+        // center of parent
+        if (!params.hasKey("gravity")) {
+          right = (rect.getDouble("x")).toInt().dpf() + ( (rect.getDouble("width")).toInt().dpf() / 2)
+          right -= menuWidth / 2
+        }
+        if (right == 0f) right = 8.dpf()
+
+        if (right.toInt() + menuWidth >= screenWidth) {
+          right = screenWidth - menuWidth - menuEdgesMargin
+        }
+
+        val y = rect.getDouble("y").toFloat()
+        var top = (rect.getDouble("height") + y).toInt().dpf() + 8.dpf()
+        if (top.toInt() + menuHeight > screenHeight) {
+          top -= 8.dpf()
+          top -= (rect.getDouble("height")).toFloat().dpf()
+          top -= menuHeight
+          top -= 8.dpf()
+        }
+        menuContainer.x = max(menuEdgesMargin, right)
+        menuContainer.y = top
+
+
+        topMenu.x = (screenWidth.toFloat() - topMenu.width) / 2
+        topMenu.y = min(top, y.dpf()) - topMenu.height - 8.dpf()
+        if (topMenu.y <= 0) topMenu.y = 8.dpf()
+        if (menuContainer.y < (topMenu.y + topMenu.height)) {
+          menuContainer.y = topMenu.y + topMenu.height + 8.dpf()
+        }
       }
-
-      val menuItemHeight = params.getDouble("menuItemHeight").dp()
-      val menuEdgesMargin = params.getDouble("menuEdgesMargin").dp().toFloat()
-      val menuHeight = menuContainer.childCount * menuItemHeight
-      val screenHeight = requireView().height - params.getDouble("safeAreaBottom").dp()
-      val screenWidth = requireView().width
-      val rect = params.getMap("rect")!!
-
-      // start of parent
-      var right = (rect.getDouble("x")).toInt().dpf()
-
-      // end of parent
-      if (params.hasKey("gravity") && params.getString("gravity") == "end") {
-        right += (rect.getDouble("width")).toInt().dpf()
-      }
-
-      // center of parent
-      if (!params.hasKey("gravity")) {
-        right = (rect.getDouble("x")).toInt().dpf() + ( (rect.getDouble("width")).toInt().dpf() / 2)
-        right -= menuWidth / 2
-      }
-      if (right == 0f) right = 8.dpf()
-
-      if (right.toInt() + menuWidth >= screenWidth) {
-        right = screenWidth - menuWidth - menuEdgesMargin
-      }
-
-      var top = (rect.getDouble("height") + rect.getDouble("y")).toInt().dpf() + 8.dpf()
-      if (top.toInt() + menuHeight > screenHeight) {
-        top -= 8.dpf()
-        top -= (rect.getDouble("height")).toFloat().dpf()
-        top -= menuHeight
-        top -= 8.dpf()
-      }
-      menuContainer.x = max(menuEdgesMargin, right)
-      menuContainer.y = top
     }
+  }
+
+  private fun showTopMenu(items: ReadableArray) {
+    val size = items.size()
+    val menuCornerRadius = params.getDouble("menuCornerRadius").dp()
+    val menuContainer = requireView().findViewById<LinearLayout>(R.id.top_menu_container)
+    menuContainer.setBackgroundColor(
+      params.color(
+        requireContext(),
+        "menuBackgroundColor",
+        Color.WHITE
+      )
+    )
+    menuContainer.setCornerRadius(menuCornerRadius)
+
+    val views = mutableListOf<View>()
+    for (i in 0 until size) {
+      val item = items.getMap(i)
+      val id = item.getString("id")
+      val emoji = item.getString("emoji")
+      val text = TextView(context)
+      val size = params.getDouble("topMenuItemSize")
+      text.setTextSize(TypedValue.COMPLEX_UNIT_SP, size.toFloat())
+      text.text = emoji
+      views.add(text)
+      text.setOnClickListener {
+        onDismiss?.invoke(id, "top")
+        onDismiss = null
+        dismissAllowingStateLoss()
+      }
+    }
+    val menuEdgesMargin = params.getDouble("menuEdgesMargin").dp().toFloat()
+    val maxWidth = Resources.getSystem().displayMetrics.widthPixels - menuEdgesMargin
+    wrapChildrenInLinearLayout(menuContainer, views, maxWidth.toInt())
   }
 
   private fun showMenu(items: ReadableArray) {
@@ -156,7 +208,8 @@ internal class FullScreenDialog(
         if (item.hasKey("submenu")) {
           menuContainer.removeAllViews()
           showMenu(item.getArray("submenu")!!)
-          invalidateMenuContainer(menuContainer)
+          val topMenu = requireView().findViewById<LinearLayout>(R.id.top_menu_container)
+          invalidateMenuContainer(menuContainer, topMenu)
           return@insertMenuItem
         }
 
@@ -166,7 +219,9 @@ internal class FullScreenDialog(
       }
     }
 
-    invalidateMenuContainer(menuContainer)
+    val topMenu = requireView().findViewById<LinearLayout>(R.id.top_menu_container)
+
+    invalidateMenuContainer(menuContainer, topMenu)
   }
 
   override fun onDismiss(dialog: DialogInterface) {

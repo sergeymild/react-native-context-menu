@@ -54,7 +54,8 @@ const Item: React.FC<{
           rect: viewHelpers.measureView(ref),
           menuEdgesMargin: 8,
           topMenuItemSize: 30,
-          gravity: 'end',
+          gravity: 'start',
+          // topMenuItems: emojisList.map((s) => ({ id: s, emoji: s })),
           topMenuItems: emojisList.map((s) => ({ id: s, emoji: s })),
           bottomMenuItems: [
             { id: 'copy', title: 'copy', icon: require('./trash.png') },
@@ -103,7 +104,7 @@ export default function App() {
           top: 34,
           start: 0,
           width: 100,
-          height: 60,
+          height: 20,
           backgroundColor: 'red',
         }}
       />
