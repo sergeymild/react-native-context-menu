@@ -55,6 +55,7 @@ interface Params {
   separatorColor?: string;
   separatorHeight?: number;
   menuCornerRadius?: number;
+  menuEdgesMargin?: number;
   gravity?: 'start' | 'end';
   bottomMenuItems: ContextMenuAction[];
   topMenuItems: TopMenuItem[];
@@ -82,6 +83,7 @@ export function showContextMenu(params: Params) {
         menuItemHeight: params.menuItemHeight ?? 36,
         topMenuItemSize: params.topMenuItemSize ?? 36,
         safeAreaBottom: params.safeAreaBottom ?? 0,
+        menuEdgesMargin: params.menuEdgesMargin ?? 8,
         separatorColor: params.separatorColor
           ? processColor(params.separatorColor)
           : undefined,

@@ -52,8 +52,9 @@ const Item: React.FC<{
           safeAreaBottom: props.safeAreaBottom,
           viewTargetId: props.addPreview ? ref : undefined,
           rect: viewHelpers.measureView(ref),
+          menuEdgesMargin: 8,
           topMenuItemSize: 30,
-          gravity: 'start',
+          gravity: 'end',
           topMenuItems: emojisList.map((s) => ({ id: s, emoji: s })),
           bottomMenuItems: [
             { id: 'copy', title: 'copy', icon: require('./trash.png') },
@@ -93,8 +94,6 @@ const Item: React.FC<{
 };
 
 export default function App() {
-  const ref2 = useRef<TouchableOpacity>(null);
-
   return (
     <View style={styles.container}>
       <Item

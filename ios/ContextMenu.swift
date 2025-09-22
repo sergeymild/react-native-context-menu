@@ -80,6 +80,7 @@ class ContextMenu: RCTViewManager {
     let targetId = RCTConvert.nsNumber(options["viewTargetId"])
     let targetView = bridge.uiManager.view(forReactTag: targetId)
     
+    MenuConstants.menuHMargin = RCTConvert.cgFloat(options["menuEdgesMargin"])
     MenuConstants.menuBackgroundColor = RCTConvert.uiColor(options["menuBackgroundColor"])
     MenuConstants.menuMinWidth = RCTConvert.cgFloat(options["minWidth"])
     MenuConstants.menuItemHeight = RCTConvert.cgFloat(options["menuItemHeight"])
