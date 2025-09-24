@@ -28,14 +28,14 @@ class ContextMenuRenderer {
   var onMenuItemPress: ((String, Int) -> [BottomMenuItem]?)? = nil
   var onTopMenuItemPress: ((String) -> Void)? = nil
   private var gravity: String? = nil
-  
+
   private var mainViewRect : CGRect = .zero
   private var window: UIWindow?
-  
+
   private var safeTop: CGFloat {
     get { window!.safeAreaInsets.top }
   }
-  
+
   private var safeBottom: CGFloat {
     get {
       MenuConstants.safeAreaBottom == 0
@@ -43,27 +43,27 @@ class ContextMenuRenderer {
       : MenuConstants.safeAreaBottom
     }
   }
-  
+
   private var screenHeight: CGFloat {
     get { window!.frame.height }
   }
-  
+
   private var screenWidth: CGFloat {
     get { window!.frame.width }
   }
-  
+
   private var maxWidth: CGFloat {
     get { window!.frame.width - MenuConstants.menuHMargin * 2 }
   }
-  
+
   private var maxHeight: CGFloat {
     get {  UIScreen.main.bounds.height - safeTop - safeBottom }
   }
-  
+
   private var maxBottom: CGFloat {
     get { window!.frame.height - safeBottom }
   }
-  
+
   private var _viewTargetedRect: CGRect {
     get {
       if let v = viewTargeted {
@@ -75,15 +75,15 @@ class ContextMenuRenderer {
       fatalError("must be present either viewTargeted or viewTargetedRect")
     }
   }
-  
+
   private var topMenuHeight: CGFloat {
     return topMenuView?.frame.height ?? .zero
   }
-  
+
   private var allContentHeight: CGFloat {
     _viewTargetedRect.height + menuView.frame.height
   }
-  
+
   private var targetRect: CGPoint {
     get {
       var top = safeTop + (topMenuItems.isEmpty ? 0 : (topMenuHeight + MenuConstants.menuVMargin))
@@ -92,7 +92,7 @@ class ContextMenuRenderer {
       return .init(x: r.origin.x, y: max(top, r.origin.y))
     }
   }
-  
+
   private var bottomMenuHeight: CGFloat {
     get {
       var itemsHeight = CGFloat(bottomMenuItems.count) * MenuConstants.menuItemHeight
@@ -102,7 +102,7 @@ class ContextMenuRenderer {
       return itemsHeight
     }
   }
-  
+
   // MARK:- Get Rendered Image Functions
   private func getRenderedImage(afterScreenUpdates: Bool = false) -> UIImage{
     let renderer = UIGraphicsImageRenderer(size: viewTargeted!.bounds.size)
@@ -114,7 +114,7 @@ class ContextMenuRenderer {
     }
     return viewSnapShotImage
   }
-  
+
   // MARK: showMenu
   open func showMenu(
     targetView: UIView? = nil,
@@ -126,7 +126,7 @@ class ContextMenuRenderer {
     bottomMenu: [BottomMenuItem],
     gravity: String? = nil
   ) {
-    
+
     self.viewTargeted = targetView
     self.gravity = gravity
     self.viewTargetedRect = viewTargetedRect
@@ -143,7 +143,7 @@ class ContextMenuRenderer {
       self.separatorColor = separatorColor
       self.separatorHeight = separatorHeight
       if !MenuConstants.blurEffectEnabled { self.addBlurEffectView() }
-      
+
       self.addTopMenu()
       self.addTargetedImageView()
       self.addBottomMenu()
@@ -151,14 +151,14 @@ class ContextMenuRenderer {
       self.openMenu()
     }
   }
-  
+
   // MARK: addTopMenu
   func addTopMenu() {
     let rect = targetRect
     if (topMenuItems.isEmpty) { return }
     topMenuView = UIView()
     self.scrollView?.addSubview(topMenuView!)
-    
+
     topMenuView?.flex.maxWidth(UIScreen.main.bounds.width - 32)
     topMenuView?.flex.direction(.row)
     topMenuView?.flex.wrap(.wrap)
@@ -166,13 +166,13 @@ class ContextMenuRenderer {
     topMenuView?.flex.justifyContent(.center)
     topMenuView?.flex.alignItems(.center)
     topMenuView?.flex.padding(8)
-    
+
     topMenuView!.backgroundColor = MenuConstants.menuBackgroundColor
     topMenuView!.layer.cornerRadius = MenuConstants.menuCornerRadius
     topMenuView!.layer.shadowColor = UIColor.black.cgColor
     topMenuView!.layer.shadowRadius = MenuConstants.topMenuItemSize / 2
     topMenuView!.layer.shadowOpacity = 0
-    
+
     var index = 0
     for item in topMenuItems {
       let v = TopMenuItemView()
@@ -187,11 +187,11 @@ class ContextMenuRenderer {
         closeAllViews()
       }
     }
-    
+
     topMenuView?.flex.layout(mode: .adjustHeight)
     let menuWidth = topMenuView?.frame.width ?? .zero
-    
-    
+
+
     var x = max(
       MenuConstants.menuHMargin,
       rect.x + _viewTargetedRect.width - menuWidth
@@ -200,32 +200,32 @@ class ContextMenuRenderer {
     if x + maxX >= screenWidth {
       x = screenWidth - MenuConstants.menuVMargin - maxX
     }
-    
+
     let y = max(rect.y - topMenuHeight - MenuConstants.menuVMargin, window!.safeAreaInsets.top)
     topMenuView!.frame.origin = .init(x: x, y: y)
     customViewHeight += topMenuView!.frame.height
   }
-  
+
   // MARK: addBottomMenu
   func addBottomMenu() {
     let rect = targetRect
     scrollView?.addSubview(menuView)
     menuView.backgroundColor = MenuConstants.menuBackgroundColor
     menuView.layer.cornerRadius = MenuConstants.menuCornerRadius
-    
+
     var maxWidth = longestMenuItem(
       items: bottomMenuItems,
       maxWidth: maxWidth
     )
-    
+
     maxWidth = max(MenuConstants.menuMinWidth, maxWidth)
     maxWidth = min(MenuConstants.menuMaxWidth, maxWidth)
-    
+
     var x = max(
       MenuConstants.menuHMargin,
       rect.x + _viewTargetedRect.width - maxWidth
     )
-    
+
     if x + maxWidth >= screenWidth {
       x = screenWidth - maxWidth - MenuConstants.menuHMargin
     }
@@ -233,27 +233,27 @@ class ContextMenuRenderer {
     if x + maxWidth >= screenWidth {
       maxWidth = screenWidth - MenuConstants.menuHMargin
     }
-    
+
     var y = _viewTargetedRect.height + rect.y + MenuConstants.menuVMargin
-    
+
     if viewTargeted == nil {
       if y > maxBottom {
         y = maxBottom - bottomMenuHeight - MenuConstants.menuVMargin
       }
     }
-    
+
     if gravity == "start" {
 //      x = MenuConstants.menuHMargin
       x = _viewTargetedRect.minX
-      if x <= 0 { x = MenuConstants.menuHMargin }
+      if x <= 0 || x < MenuConstants.menuHMargin { x = MenuConstants.menuHMargin }
     }
-    
+
     menuView.frame = .init(
       origin: .init(x: x, y: y),
       size: .init(width: maxWidth, height: bottomMenuHeight)
     )
-    
-    
+
+
     for (index, item) in bottomMenuItems.enumerated() {
       let isEnableSeparator = index != 0 && index != bottomMenuItems.count
       let v = BottomMenuItemView()
@@ -264,7 +264,7 @@ class ContextMenuRenderer {
       v.setup(y: y, item: item, menuWidth: maxWidth)
       menuView.addSubview(v)
       menuView.isUserInteractionEnabled = true
-      
+
       if isEnableSeparator, let sHeight = separatorHeight {
         let sv = UIView()
         sv.frame = .init(
@@ -276,7 +276,7 @@ class ContextMenuRenderer {
         sv.backgroundColor = separatorColor
         menuView.addSubview(sv)
       }
-      
+
       v.onTap { [weak self] _ in
         guard let self else { return }
         MenuImpactGenerator.shared.impactOccurred()
@@ -288,28 +288,28 @@ class ContextMenuRenderer {
         closeAllViews()
       }
     }
-    
+
     menuView.layer.shadowColor = UIColor.black.cgColor
     menuView.layer.shadowRadius = 12
     menuView.layer.shadowOpacity = 0
-    
+
     customViewHeight += menuView.frame.height
     customViewHeight += MenuConstants.menuVMargin
   }
-  
+
   // MARK: addTargetedImageView
   func addTargetedImageView() {
     scrollView?.addSubview(targetedImageView)
-    
+
     let rect = targetRect
-    
+
     if viewTargeted == nil {
       targetedImageView.frame = .init(origin: _viewTargetedRect.origin, size: .zero)
       return
     }
-    
-    
-    
+
+
+
     targetedImageView.image = self.getRenderedImage(afterScreenUpdates: true)
     targetedImageView.frame = CGRect(
       x: rect.x,
@@ -323,7 +323,7 @@ class ContextMenuRenderer {
     targetedImageView.isUserInteractionEnabled = true
     customViewHeight = _viewTargetedRect.height
   }
-  
+
   // MARK: setupScrollViewContentSize
   func setupScrollViewContentSize() {
     scrollView?.showsVerticalScrollIndicator = false
@@ -334,13 +334,13 @@ class ContextMenuRenderer {
     if menuBottom > maxBottom {
       height += safeBottom
     }
-    
-    
-    
+
+
+
     debugPrint(allContentHeight, maxHeight, customViewHeight, menuView.frame.maxY)
     if maxHeight >= customViewHeight {
       scrollView?.isScrollEnabled = false
-      
+
     } else {
       var topMenuHeight: CGFloat = 0
       if let m = topMenuView {
@@ -348,7 +348,7 @@ class ContextMenuRenderer {
         window?.rootViewController?.view.addSubview(m)
         topMenuHeight = m.frame.height
       }
-      
+
       if topMenuHeight + targetedImageView.frame.height + menuView.frame.height < (screenHeight - safeTop - safeBottom) {
         menuView.frame.origin.y = screenHeight - safeBottom - menuView.frame.height
         targetedImageView.frame.origin.y = menuView.frame.origin.y - targetedImageView.frame.height - MenuConstants.menuVMargin
@@ -361,32 +361,32 @@ class ContextMenuRenderer {
         height = menuView.frame.maxY + safeBottom
       }
     }
-    
+
     scrollView?.contentSize = .init(
       width: window!.frame.width,
       height: height
     )
     scrollView?.onTap { [closeAllViews] _ in closeAllViews() }
-    
+
     DispatchQueue.main.async {
       if self.allContentHeight >= self.maxHeight && !self.topMenuItems.isEmpty {
         self.scrollView?.scrollToTop()
       } else {
         self.scrollView?.scrollToBottom()
       }
-      
+
     }
   }
-  
-  
+
+
   // MARK: addBlurEffectView
   func addBlurEffectView() {
     if viewTargeted == nil { return }
     window?.rootViewController?.view.insertSubview(blurEffectView, at: 0)
-    
+
     blurEffectView.effect = MenuConstants.blurEffectDefault
     blurEffectView.backgroundColor = .clear
-    
+
     blurEffectView.frame = CGRect(
       x: mainViewRect.origin.x,
       y: mainViewRect.origin.y,
@@ -394,12 +394,12 @@ class ContextMenuRenderer {
       height: mainViewRect.height
     )
   }
-  
+
   @objc
   func dismissViewAction(_ sender: UITapGestureRecognizer? = nil){
     closeAllViews()
   }
-  
+
   // MARK: closeBottomMenu
   func closeBottomMenu() {
     let prevoiusMenuFrame = menuView.frame
@@ -413,19 +413,19 @@ class ContextMenuRenderer {
       if self.menuView.frame.maxX > self.screenWidth - MenuConstants.menuHMargin {
         self.menuView.frame.origin.x = self.screenWidth - MenuConstants.menuHMargin - self.menuView.frame.width
       }
-      
+
       self.menuView.alpha = 0
       UIView.animate(withDuration: 0.2) {
         self.menuView.alpha = 1
       }
     }
   }
-  
+
   // MARK: closeAllViews
   func closeAllViews() {
     DispatchQueue.main.async {
       let rect = self.targetRect
-      
+
       UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 6, options: [.layoutSubviews, .preferredFramesPerSecond60, .allowUserInteraction], animations: {
         self.prepareViewsForRemoveFromSuperView(with: rect)
       }) { (_) in
@@ -435,7 +435,7 @@ class ContextMenuRenderer {
       }
     }
   }
-  
+
   // MARK: openMenu
   func openMenu() {
     window!.makeKeyAndVisible()
@@ -443,9 +443,9 @@ class ContextMenuRenderer {
     menuView.alpha = 0
     blurEffectView.alpha = 0
     targetedImageView.alpha = 1
-    
+
     targetedImageView.layer.shadowOpacity = 0.0
-    
+
     UIView.animate(withDuration: 0.2) {
       self.menuView.alpha = 1
       self.topMenuView?.alpha = 1
@@ -455,7 +455,7 @@ class ContextMenuRenderer {
       self.menuView.layer.shadowOpacity = 0.2
     }
   }
-  
+
   // MARK: prepareViewsForRemoveFromSuperView
   func prepareViewsForRemoveFromSuperView(with rect: CGPoint) {
     blurEffectView.alpha = 0
@@ -472,7 +472,7 @@ class ContextMenuRenderer {
     topMenuView?.alpha = 0
     menuView.layer.shadowOpacity = 0
   }
-  
+
   func removeAllViewsFromSuperView() {
     viewTargeted?.alpha = 1
     viewTargeted = nil
