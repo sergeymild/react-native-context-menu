@@ -156,8 +156,8 @@ internal class FullScreenDialog(
     val views = mutableListOf<View>()
     for (i in 0 until size) {
       val item = items.getMap(i)
-      val id = item.getString("id")
-      val emoji = item.getString("emoji")
+      val id = item?.getString("id")
+      val emoji = item?.getString("emoji")
       val text = TextView(context)
       val size = params.getDouble("topMenuItemSize")
       text.setTextSize(TypedValue.COMPLEX_UNIT_SP, size.toFloat())

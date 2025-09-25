@@ -196,9 +196,10 @@ class ContextMenuRenderer {
       MenuConstants.menuHMargin,
       rect.x + _viewTargetedRect.width - menuWidth
     )
+    x = (screenWidth - topMenuView!.frame.width) / 2
     let maxX = topMenuView!.frame.maxX
     if x + maxX >= screenWidth {
-      x = screenWidth - MenuConstants.menuVMargin - maxX
+      x = (screenWidth - topMenuView!.frame.width) / 2
     }
 
     let y = max(rect.y - topMenuHeight - MenuConstants.menuVMargin, window!.safeAreaInsets.top)
