@@ -16,6 +16,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.core.view.doOnLayout
 import androidx.fragment.app.DialogFragment
 import com.contextmenu.R
 import com.facebook.react.bridge.ReadableArray
@@ -49,13 +50,10 @@ internal class FullScreenDialog(
 
   override fun onStart() {
     super.onStart()
-    dialog?.window?.let {
-      val width = ViewGroup.LayoutParams.MATCH_PARENT
-      val height = ViewGroup.LayoutParams.MATCH_PARENT
-      it.setLayout(width, height)
-      it.setFormat(PixelFormat.TRANSLUCENT)
-      it.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-      it.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+    dialog?.window?.let { w ->
+      w.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+      w.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      w.setDimAmount(0f)
     }
   }
 
@@ -82,8 +80,8 @@ internal class FullScreenDialog(
   private fun invalidateMenuContainer(menuContainer: LinearLayout, topMenu: LinearLayout) {
     menuContainer.requestLayout()
     menuContainer.invalidate()
-    menuContainer.post {
-      topMenu.post {
+    menuContainer.doOnLayout {
+      topMenu.doOnLayout {
 
         val menuWidth = max(params.width("minWidth", 0), menuContainer.width)
         if (menuContainer.width < menuWidth) {
@@ -109,7 +107,8 @@ internal class FullScreenDialog(
 
         // center of parent
         if (!params.hasKey("gravity")) {
-          right = (rect.getDouble("x")).toInt().dpf() + ( (rect.getDouble("width")).toInt().dpf() / 2)
+          right =
+            (rect.getDouble("x")).toInt().dpf() + ((rect.getDouble("width")).toInt().dpf() / 2)
           right -= menuWidth / 2
         }
         if (right == 0f) right = 8.dpf()
@@ -126,15 +125,16 @@ internal class FullScreenDialog(
           top -= menuHeight
           top -= 8.dpf()
         }
-        menuContainer.x = max(menuEdgesMargin, right)
-        menuContainer.y = top
+
+        menuContainer.translationX = max(menuEdgesMargin, right)
+        menuContainer.translationY = top
 
 
-        topMenu.x = (screenWidth.toFloat() - topMenu.width) / 2
-        topMenu.y = min(top, y.dpf()) - topMenu.height - 8.dpf()
-        if (topMenu.y <= 0) topMenu.y = 8.dpf()
-        if (menuContainer.y < (topMenu.y + topMenu.height)) {
-          menuContainer.y = topMenu.y + topMenu.height + 8.dpf()
+        topMenu.translationX = (screenWidth.toFloat() - topMenu.width) / 2
+        topMenu.translationY = min(top, y.dpf()) - topMenu.height - 8.dpf()
+        if (topMenu.translationY <= 0) topMenu.translationY = 8.dpf()
+        if (menuContainer.translationY < (topMenu.translationY + topMenu.height)) {
+          menuContainer.translationY = topMenu.translationY + topMenu.height + 8.dpf()
         }
       }
     }
@@ -156,8 +156,8 @@ internal class FullScreenDialog(
     val views = mutableListOf<View>()
     for (i in 0 until size) {
       val item = items.getMap(i)
-      val id = item?.getString("id")
-      val emoji = item?.getString("emoji")
+      val id = item?.getString("id")!!
+      val emoji = item?.getString("emoji")!!
       val text = TextView(context)
       val size = params.getDouble("topMenuItemSize")
       text.setTextSize(TypedValue.COMPLEX_UNIT_SP, size.toFloat())
@@ -195,8 +195,8 @@ internal class FullScreenDialog(
         requireContext(),
         leadingIcons = leadingIcons,
         data = BottomMenuItem(
-          id = item.getString("id")!!,
-          title = item.getString("title")!!,
+          id = item?.getString("id")!!,
+          title = item?.getString("title")!!,
           titleSize = item.getDouble("titleSize").toFloat(),
           iconSize = item.getDouble("iconSize").toFloat().dp(),
           icon = item,
