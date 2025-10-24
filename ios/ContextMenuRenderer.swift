@@ -476,6 +476,7 @@ class ContextMenuRenderer {
         viewTargeted = nil
         viewTargetedRect = .zero
         targetedImageView.alpha = 0
+        customViewHeight = 0
         targetedImageView.removeFromSuperview()
         targetedImageView.image = nil
         blurEffectView.removeFromSuperview()
